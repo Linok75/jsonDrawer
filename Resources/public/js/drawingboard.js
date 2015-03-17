@@ -1,5 +1,13 @@
-var drawingboard = document.createElement('canvas');
+var drawingboard;
+var context;
 
-$(drawingboard).width($(window).width());
-$(drawingboard).height($(window).height());
-$(drawingboard).appendTo('body');
+//To avoid image deformation, append canvas and get id after.
+$('body').append($('<canvas>',{id:"drawingboard"}).attr({'width':$(window).width(),'height':$(window).height()}));
+
+drawingboard = $('#drawingboard').get(0);
+context = drawingboard.getContext('2d');
+
+/*
+***********Test***********
+context.fillRect(50, 25, 150, 100);
+*/
