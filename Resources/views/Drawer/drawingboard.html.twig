@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        {% block meta %}
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {% endblock %}
+
+        <title>{% block title %}Drawing Board{% endblock %}</title>
+
+        {% block stylesheets %}
+            {# Main Css #}
+            <link rel="stylesheet" type="text/css" href="{{ asset('bundles/linokjsondrawer/css/drawingboard.css') }}" />
+        {% endblock %}
+    </head>
+
+    {% block main %}
+        <body>
+        {# Canvas will be added with JS #}
+        </body>
+    {% endblock %}
+
+    {% block javascripts %}
+        {# JQuery #}
+        <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/jquery.js') }}"></script>
+        
+        {# Drawing board #}
+        <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/drawingboard.js') }}"></script>
+        
+        {# Drawer #}
+        <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/drawable.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/drawer.js') }}"></script>
+    {% endblock %}
+</html>

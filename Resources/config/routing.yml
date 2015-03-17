@@ -1,0 +1,4 @@
+linok_json_drawer:
+    resource: "@LinokJsonDrawerBundle/Controller"
+    type: annotation
+    prefix: /
