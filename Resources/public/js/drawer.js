@@ -32,7 +32,7 @@ Drawer.prototype.removeDrawableElement = function (drawable) {
     }
 };
 
-drawer = new Drawer();
+/*drawer = new Drawer();
 
 //test variable
 drawable = new Drawable();
@@ -56,4 +56,4 @@ drawable.addPoint([700, 300]);
 drawable.addPoint([500, 300]);
 drawer.addDrawableElement(drawable);
 
-drawer.draw();
+drawer.draw();*/
