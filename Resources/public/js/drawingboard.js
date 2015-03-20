@@ -1,13 +1,27 @@
-var drawingboard;
-var context;
+/* global json */
 
-//To avoid image deformation, append canvas and get id after.
-$('body').append($('<canvas>',{id:"drawingboard"}).attr({'width':$(window).width(),'height':$(window).height()}));
+var pjs;
+var jsonmapper;
 
-drawingboard = $('#drawingboard').get(0);
-context = drawingboard.getContext('2d');
+$(document).ready(function () {
+    getPjsInstance();
+});
 
-/*
-***********Test***********
-context.fillRect(50, 25, 150, 100);
-*/
+function getPjsInstance() {
+    var instanciate = false;
+    pjs = Processing.getInstanceById('drawingboard');
+    
+    if (typeof pjs !== 'undefined'){
+        instanciate = true;
+    }
+    if (!instanciate){
+        setTimeout(getPjsInstance, 250);
+    }else{
+        initPjs();
+    }
+}
+
+function initPjs(){
+    pjs.canvasSize($(window).width(), $(window).height());
+    jsonmapper = new Jsonmapper(json);
+}

@@ -12,27 +12,26 @@
             {# Main Css #}
             <link rel="stylesheet" type="text/css" href="{{ asset('bundles/linokjsondrawer/css/drawingboard.css') }}" />
         {% endblock %}
+        {% block javascripts %}
+            {# JQuery #}
+            <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/jquery.js') }}"></script>
+
+            {# Processing #}
+            <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/processing.js') }}"></script>
+
+            {# Json parser #}
+            <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/jsonexample.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/jsonmapper.js') }}"></script>
+
+            {# Drawing board #}
+            <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/drawingboard.js') }}"></script>
+        {% endblock %}
     </head>
 
     {% block main %}
         <body>
+            <canvas id="drawingboard" data-processing-sources="{{ asset('bundles/linokjsondrawer/js/drawer.pde') }}"></canvas>
         </body>
     {% endblock %}
 
-    {% block javascripts %}
-        {# JQuery #}
-        <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/jquery.js') }}"></script>
-        
-        {# Drawing board #}
-        <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/drawingboard.js') }}"></script>
-        
-        {# Drawer #}
-        <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/drawable.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/drawer.js') }}"></script>
-        
-        {# Json parser #}
-        <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/jsonexample.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/jsonparser.js') }}"></script>
-        
-    {% endblock %}
 </html>
