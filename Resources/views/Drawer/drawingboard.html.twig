@@ -17,7 +17,7 @@
             <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/jquery.js') }}"></script>
 
             {# Processing #}
-            <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/processing.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/processing/drawer/web-export/processing.js') }}"></script>
 
             {# Json parser #}
             <script type="text/javascript" src="{{ asset('bundles/linokjsondrawer/js/jsonexample.js') }}"></script>
@@ -30,7 +30,7 @@
 
     {% block main %}
         <body>
-            <canvas id="drawingboard" data-processing-sources="{{ asset('bundles/linokjsondrawer/js/drawer.pde') }}"></canvas>
+            <canvas id="drawingboard" data-processing-sources="{{ asset('bundles/linokjsondrawer/processing/drawer/web-export/drawer.pde') }}"></canvas>
         </body>
     {% endblock %}
 
