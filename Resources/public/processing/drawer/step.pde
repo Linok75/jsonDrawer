@@ -7,8 +7,10 @@ class Step implements Drawable {
   private Point origin;
   private boolean fixed;
   private Box box;
+  private ArrayList paths;
 
   public Step(String name, Point origin) {
+    this.paths = new ArrayList();
     this.name = name;
     textSize(this.FONT_SIZE);
     this.origin = origin;
@@ -17,11 +19,22 @@ class Step implements Drawable {
   }
 
   public Step(String name) {
+    this.paths = new ArrayList();
     this.name = name;
     textSize(this.FONT_SIZE);
     this.origin = new Point(10, (this.DEFAULT_PADDING + textAscent()));
     this.fixed = false;
     this.initBox();
+  }
+
+  public void addPath(Path path){
+    this.paths.add(path);
+  }
+  
+  public void notifyPaths(){
+    for(int i=0;i<this.paths.size();i++){
+      this.paths.get(i).update();
+    }
   }
 
   private void initBox() {

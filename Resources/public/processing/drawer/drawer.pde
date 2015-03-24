@@ -41,6 +41,7 @@ public void mousePressed() {
 public void mouseDragged() {
   if (this.stepFocused != null) {
     this.stepFocused.setOrigin(new Point(mouseX,mouseY));
+    this.stepFocused.notifyPaths();
     redraw();
   }
 }
@@ -89,7 +90,6 @@ public void addStep(String name) {
 
 public void addPath(String name, String srcName, String destName) {
   Step source, destination, tmp;
-  String side;
 
   for (int i=0; i<this.drawables.size (); i++) {
     if ((this.drawables.get(i)) instanceof Step) {
@@ -103,13 +103,7 @@ public void addPath(String name, String srcName, String destName) {
     }
   }
 
-  if (this.drawables.size()%2 == 1) {
-    side = "LEFT";
-  } else {
-    side = "RIGHT";
-  }
-
-  this.drawables.add(new Path(name, source, destination, side));
+  this.drawables.add(new Path(name, source, destination));
   this.redraw();
 }
 

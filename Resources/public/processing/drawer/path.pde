@@ -11,14 +11,15 @@ class Path implements Drawable {
   private Point origin;
   private boolean fixed;
   private Box box;
-  private String side; //RIGHT, LEFT
+  private Point[] arrow;
 
-  public Path(String name, Step source, Step destination, String side) {
+  public Path(String name, Step source, Step destination) {
     this.name = name;
-    this.side = side;
     textSize(this.FONT_SIZE);
     this.source = source;
     this.destination = destination;
+    this.source.addPath(this);
+    this.destination.addPath(this);
     this.fixed = true;
     this.generatePoints();
     this.initBox();
@@ -26,22 +27,82 @@ class Path implements Drawable {
 
   private void generatePoints() {
     this.points = new ArrayList();
+    this.arrow = new Point[3];
 
-    switch (this.side) {
-    case "RIGHT" :
-      this.rightSideConf();
-      break;
 
-    case "LEFT" : 
-      this.leftSideConf();
-      break;
-
-    default :
-      throw new Error("Unknow side configuration !");
+    //Source on the right of destination
+    if (this.source.getBox().getOrigin().getX() > this.destination.getBox().getOrigin().getX()) {
+      //Source on the left of destination
+      if ( (this.source.getBox().getOrigin().getX() + this.source.getBox().getSize().getWidth()) < (this.destination.getBox().getOrigin().getX() + this.destination.getBox().getSize().getWidth()) ) {
+        //Source box above destination boxs
+        if (this.source.getBox().getOrigin().getY() > this.destination.getBox().getOrigin().getY()) {
+          //TOP_BOT_ARROW
+          this.topSideArrow();
+        } else {
+          //BOT_TOP_ARROW
+          this.botSideArrow();
+        }
+      } else {
+        //RIGHT_RIGHT_ARROW
+        this.rightSideArrow();
+      }
+    }else{
+      //LEFT_LEFT_ARROW
+      this.leftSideArrow();
     }
   }
+  
+  private void topSideArrow(){
+    Point previousPoint, point;
 
-  private void leftSideConf() {
+    point = new Point(this.source.getBox().getOrigin().getX() + this.source.getBox().getSize().getWidth()/2, this.source.getBox().getOrigin().getY());
+    this.points.add(point);
+
+    previousPoint = point;
+    point = new Point(previousPoint.getX(), previousPoint.getY() - (previousPoint.getY() - (this.destination.getBox().getOrigin().getY()+this.destination.getBox().getSize().getHeight()))/2);
+    this.points.add(point);
+
+    previousPoint = point;
+    point = new Point(this.destination.getBox().getOrigin().getX() + this.destination.getBox().getSize().getWidth()/2, previousPoint.getY());
+    this.points.add(point);
+
+    this.origin = new Point(point.getX() - (this.getSize().getWidth() + this.DEFAULT_PADDING), (point.getY() - previousPoint.getY())/2 + previousPoint.getY() + this.getSize().getHeight()/2);
+
+    previousPoint = point;
+    point = new Point(previousPoint.getX(), this.destination.getBox().getOrigin().getY()+this.destination.getBox().getSize().getHeight());
+    this.points.add(point);
+    
+    this.arrow[0] = point;
+    this.arrow[1] = new Point(point.getX()+this.ARROW_SIZE/2, point.getY()+this.ARROW_SIZE);
+    this.arrow[2] = new Point(point.getX()-this.ARROW_SIZE/2, point.getY()+this.ARROW_SIZE);
+  }
+  
+  private void botSideArrow(){
+    Point previousPoint, point;
+
+    point = new Point(this.source.getBox().getOrigin().getX() + this.source.getBox().getSize().getWidth()/2, this.source.getBox().getOrigin().getY() + this.source.getBox().getSize().getHeight());
+    this.points.add(point);
+
+    previousPoint = point;
+    point = new Point(previousPoint.getX(), previousPoint.getY() + (this.destination.getBox().getOrigin().getY()-previousPoint.getY())/2);
+    this.points.add(point);
+
+    previousPoint = point;
+    point = new Point(this.destination.getBox().getOrigin().getX() + this.destination.getBox().getSize().getWidth()/2,  previousPoint.getY());
+    this.points.add(point);
+
+    this.origin = new Point(point.getX() - (this.getSize().getWidth() + this.DEFAULT_PADDING), (point.getY() - previousPoint.getY())/2 + previousPoint.getY() + this.getSize().getHeight()/2);
+
+    previousPoint = point;
+    point = new Point(previousPoint.getX(), this.destination.getBox().getOrigin().getY());
+    this.points.add(point);
+    
+    this.arrow[0] = point;
+    this.arrow[1] = new Point(point.getX()+this.ARROW_SIZE/2, point.getY()-this.ARROW_SIZE);
+    this.arrow[2] = new Point(point.getX()-this.ARROW_SIZE/2, point.getY()-this.ARROW_SIZE);
+  }
+
+  private void leftSideArrow() {
     Point previousPoint, point;
 
     point = new Point(this.source.getBox().getOrigin().getX(), this.source.getBox().getOrigin().getY() + this.source.getBox().getSize().getHeight()/2);
@@ -60,10 +121,14 @@ class Path implements Drawable {
     previousPoint = point;
     point = new Point(this.destination.getBox().getOrigin().getX(), previousPoint.getY());
     this.points.add(point);
+    
+    this.arrow[0] = point;
+    this.arrow[1] = new Point(point.getX()-this.ARROW_SIZE, point.getY()-this.ARROW_SIZE/2);
+    this.arrow[2] = new Point(point.getX()-this.ARROW_SIZE, point.getY() + this.ARROW_SIZE/2);
   }
 
-  private void rightSideConf() {
-     Point previousPoint, point;
+  private void rightSideArrow() {
+    Point previousPoint, point;
 
     point = new Point(this.source.getBox().getOrigin().getX() + this.source.getBox().getSize().getWidth(), this.source.getBox().getOrigin().getY() + this.source.getBox().getSize().getHeight()/2);
     this.points.add(point);
@@ -81,13 +146,22 @@ class Path implements Drawable {
     previousPoint = point;
     point = new Point(this.destination.getBox().getOrigin().getX() + this.destination.getBox().getSize().getWidth(), previousPoint.getY());
     this.points.add(point);
+    
+    this.arrow[0] = point;
+    this.arrow[1] = new Point(point.getX()+this.ARROW_SIZE, point.getY()-this.ARROW_SIZE/2);
+    this.arrow[2] = new Point(point.getX()+this.ARROW_SIZE, point.getY() + this.ARROW_SIZE/2);
   }
-  
+
   private void initBox() {
     int boxHeight;
 
     boxHeight = this.getSize().getHeight() + (this.DEFAULT_PADDING*2);
     this.box = new Box(new Point(this.origin.getX() - this.DEFAULT_PADDING, this.origin.getY()-(this.DEFAULT_PADDING + textAscent())), new Dimension(this.getSize().getWidth() + (this.DEFAULT_PADDING*2), boxHeight));
+  }
+
+  public void update() {
+    this.generatePoints();
+    this.initBox();
   }
 
   public void setOrigin(Point origin) {
@@ -121,22 +195,7 @@ class Path implements Drawable {
       stroke(0);
     }
 
-    this.drawArrow(this.points.get(this.points.size()-1));
-  }
-
-  private void drawArrow(Point origin) {
-    switch (this.side) {
-    case "RIGHT" :
-      triangle(origin.getX(), origin.getY(), origin.getX()+this.ARROW_SIZE, origin.getY()-this.ARROW_SIZE/2, origin.getX()+this.ARROW_SIZE, origin.getY() + this.ARROW_SIZE/2);
-      break;
-
-    case "LEFT" : 
-      triangle(origin.getX(), origin.getY(), origin.getX()-this.ARROW_SIZE, origin.getY()-this.ARROW_SIZE/2, origin.getX() - this.ARROW_SIZE, origin.getY() + this.ARROW_SIZE/2);
-      break;
-
-    default :
-      throw new Error("Unknow side configuration !");
-    }
+    triangle(this.arrow[0].getX(),this.arrow[0].getY(),this.arrow[1].getX(),this.arrow[1].getY(),this.arrow[2].getX(),this.arrow[2].getY());
   }
 }
 
