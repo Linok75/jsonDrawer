@@ -1,4 +1,4 @@
-private float framerate = 24;
+private float framerate = 10;
 private int minY = 50; //Top of ordinate axe
 private ArrayList drawables; //Elements to draw
 private Point topPosition; //Default position of the first element
@@ -41,7 +41,7 @@ public void mousePressed() {
 public void mouseDragged() {
   if (this.stepFocused != null) {
     this.stepFocused.setOrigin(new Point(mouseX,mouseY));
-    this.stepFocused.notifyPaths();
+    this.stepFocused.refreshPaths();
     redraw();
   }
 }
@@ -88,9 +88,10 @@ public void addStep(String name) {
   this.addDrawable(new Step(name));
 }
 
-public void addPath(String name, String srcName, String destName) {
+public void addPath(String name, String srcName, String destName, String type, Object events) {
   Step source, destination, tmp;
 
+  console.log(events);
   for (int i=0; i<this.drawables.size (); i++) {
     if ((this.drawables.get(i)) instanceof Step) {
       tmp = (Step) this.drawables.get(i);
@@ -103,7 +104,11 @@ public void addPath(String name, String srcName, String destName) {
     }
   }
 
-  this.drawables.add(new Path(name, source, destination));
+  if(type != "end"){
+    this.drawables.add(new Path(name, source, destination, events));
+  }else{
+    //this.drawables.add(new EndPath(name, source, events));
+  }
   this.redraw();
 }
 

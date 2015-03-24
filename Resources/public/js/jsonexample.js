@@ -1,4 +1,4 @@
-var json = {
+/*var json = {
     "name": "modilac",
     "steps": {
         "personal": {
@@ -533,6 +533,501 @@ var json = {
                             }
                         }
                     ]
+                }
+            }
+        }
+    ]
+};
+*/
+
+
+var json = {
+    "name": "modilac",
+    "steps": {
+        "address": {
+            "type": "form",
+            "options": {
+                "title": "Adresse",
+                "description": "ETAPE 1/2 : ADRESSES",
+                "display_title": false,
+                "previous_options": {
+                    "label": "Précédent"
+                },
+                "@builder": {
+                    "worker": "extra_form_builder",
+                    "parameters": {
+                        "configuration": {
+                            "billing": {
+                                "extra_form_type": "html",
+                                "options": {
+                                    "content": "MON ADRESSE DE FACTURATION",
+                                    "attr": {
+                                        "class": "billing title"
+                                    }
+                                }
+                            },
+                            "identity_civility": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "billing civility"
+                                    }
+                                }
+                            },
+                            "identity_firstName": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "billing first-name"
+                                    }
+                                }
+                            },
+                            "identity_lastName": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "billing last-name"
+                                    }
+                                }
+                            },
+                            "identity_address1": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "billing address-1"
+                                    }
+                                }
+                            },
+                            "identity_address2": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "billing adress-2"
+                                    }
+                                }
+                            },
+                            "identity_zipCode": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "billing zip-code"
+                                    }
+                                }
+                            },
+                            "identity_city": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "city"
+                                    }
+                                }
+                            },
+                            "shipping": {
+                                "extra_form_type": "html",
+                                "options": {
+                                    "content": "MON ADRESSE DE LIVRAISON",
+                                    "attr": {
+                                        "class": "shipping title"
+                                    }
+                                }
+                            },
+                            "shipping_civility": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "shipping civility"
+                                    }
+                                }
+                            },
+                            "shipping_firstName": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "shipping first-name"
+                                    }
+                                }
+                            },
+                            "shipping_lastName": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "shipping last-name"
+                                    }
+                                }
+                            },
+                            "shipping_address1": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "shipping address-1"
+                                    }
+                                }
+                            },
+                            "shipping_address2": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "shipping adress-2"
+                                    }
+                                }
+                            },
+                            "shipping_zipCode": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "shipping zip-code"
+                                    }
+                                }
+                            },
+                            "shipping_city": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": false,
+                                    "read_only": true,
+                                    "attr": {
+                                        "class": "shipping city"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "events": {
+                    "form.pre_set_data": [
+                        {
+                            "action": "add_link",
+                            "parameters": {
+                                "link_options": {
+                                    "label": "MODIFIER",
+                                    "href": "/user/billing",
+                                    "attr": {
+                                        "id": "update_billing",
+                                        "class": "button"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "action": "add_link",
+                            "parameters": {
+                                "link_options": {
+                                    "label": "MODIFIER",
+                                    "href": "/user/shipping",
+                                    "attr": {
+                                        "id": "update_shipping",
+                                        "class": "button"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "form.post_set_data": [
+                        {
+                            "action": "change_data",
+                            "parameters": {
+                                "fields": {
+                                    "identity_civility": "{{ '{{ user.raw.civility|default(\'\') }}' }}",
+                                    "identity_firstName": "{{ '{{ user.raw.firstName|default(\'\') }}' }}",
+                                    "identity_lastName": "{{ '{{ user.raw.lastName|default(\'\') }}' }}",
+                                    "identity_address1": "{{ '{{ user.raw.address1|default(\'\') }}' }}",
+                                    "identity_address2": "{{ '{{ user.raw.address2_2|default(\'\') }}' }}",
+                                    "identity_zipCode": "{{ '{{ user.raw.zipCode|default(\'\') }}' }}",
+                                    "identity_city": "{{ '{{ user.raw.city|default(\'\') }}' }}",
+                                    "shipping_civility": "{{ '{{ user.raw.civility|default(\'\') }}' }}",
+                                    "shipping_firstName": "{{ '{{ user.raw.firstName|default(\'\') }}' }}",
+                                    "shipping_lastName": "{{ '{{ user.raw.lastName|default(\'\') }}' }}",
+                                    "shipping_address1": "{{ '{{ user.raw.address1|default(\'\') }}' }}",
+                                    "shipping_address2": "{{ '{{ user.raw.address2|default(\'\') }}' }}",
+                                    "shipping_zipCode": "{{ '{{ user.raw.zipCode|default(\'\') }}' }}",
+                                    "shipping_city": "{{ '{{ user.raw.city|default(\'\') }}' }}"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "shipping_address": {
+            "type": "form",
+            "options": {
+                "title": "Adresse",
+                "description": "ETAPE 1/2 : ADRESSES",
+                "display_title": false,
+                "previous_options": {
+                    "label": "Précédent"
+                },
+                "@builder": {
+                    "worker": "extra_form_builder",
+                    "parameters": {
+                        "configuration": {
+                            "billing": {
+                                "extra_form_type": "html",
+                                "options": {
+                                    "content": "MON ADRESSE DE FACTURATION",
+                                    "attr": {
+                                        "class": "billing title"
+                                    }
+                                }
+                            },
+                            "__civility": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": true,
+                                    "attr": {
+                                        "class": "shipping civility"
+                                    }
+                                }
+                            },
+                            "__firstName": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": true,
+                                    "attr": {
+                                        "class": "shipping first-name"
+                                    }
+                                }
+                            },
+                            "__lastName": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": true,
+                                    "attr": {
+                                        "class": "shipping last-name"
+                                    }
+                                }
+                            },
+                            "__address1": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": true,
+                                    "attr": {
+                                        "class": "shipping address-1"
+                                    }
+                                }
+                            },
+                            "__address2": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": true,
+                                    "attr": {
+                                        "class": "shipping address-2"
+                                    }
+                                }
+                            },
+                            "__zipCode": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": true,
+                                    "attr": {
+                                        "class": "shipping zip-code"
+                                    }
+                                }
+                            },
+                            "__city": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "required": true,
+                                    "attr": {
+                                        "class": "shipping city"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "payment": {
+            "type": "form",
+            "options": {
+                "title": "Paiement",
+                "description": "ETAPE 2/2 : PAIEMENT",
+                "display_title": false,
+                "previous_options": {
+                    "label": "Précédent"
+                },
+                "@builder": {
+                    "worker": "extra_form_builder",
+                    "parameters": {
+                        "configuration": {
+                            "payment": {
+                                "extra_form_type": "html",
+                                "options": {
+                                    "content": "BOUTIQUE SENSEO - PAIEMENT EN LIGNE",
+                                    "attr": {
+                                        "class": "payment title"
+                                    }
+                                }
+                            },
+                            "description": {
+                                "extra_form_type": "html",
+                                "options": {
+                                    "content": "<p>Vous utilisez le formulaire sécurisé standard SSL, choisissez une carte ci-dessous</p>",
+                                    "attr": {
+                                        "class": "payment description"
+                                    }
+                                }
+                            },
+                            "means": {
+                                "extra_form_type": "text",
+                                "options": {
+                                    "attr": {
+                                        "class": "payment means"
+                                    }
+                                }
+                            }
+                        }
+                    }                
+                }
+            }
+        },
+        "confirmation": {
+            "type": "html",
+            "options": {
+                "title": "Confirmation de la commande",
+                "description": "FÉLICITATIONS !",
+                "content": "",
+                "previous_options": {
+                    "label": "Précédent"
+                },
+                "events": {
+                    "form.post_set_data": [
+                        {
+                            "action": "change_data",
+                            "parameters": {
+                                "fields": {
+                                    "content": "<p>Votre commande a bien été prise en compte.<br />Un e-mail de confirmation vient de vous être envoyé à l'addresse suivante <strong>{{ '{{ user.email }}' }}</strong><br /><br />Numéro de commande: <strong>{{ 'flow_data.data.order.id' }}</strong><br />Date de commande: <strong>{{ 'flow_data.data.order.validatedAt' }}</strong>"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "paths": [
+        {
+            "type": "single",
+            "options": {
+                "source": "address",
+                "destination": "payment",
+                "next_options": {
+                    "label": "ETAPE SUIVANTE"
+                }
+            }
+        },
+        {
+            "type": "single",
+            "options": {
+                "source": "address",
+                "destination": "shipping_address",
+                "next_options": {
+                    "label": "MODIFIER"
+                }
+            }
+        },
+        {
+            "type": "single",
+            "options": {
+                "source": "shipping_address",
+                "destination": "address",
+                "next_options": {
+                    "label": "VALIDER"
+                },
+                "events": {
+                    "form.post_bind": [
+                        {
+                            "action": "change_data",
+                            "parameters": {
+                                "fields": [
+                                    {
+                                        "value": "{{ '{{ flow_data.data.shipping_address.__civility }}' }}",
+                                        "target": {
+                                            "path": "address.shipping_civility",
+                                            "types": ["data", "remindedData"] 
+                                        }
+                                    },
+                                    {
+                                        "value": "{{ '{{ flow_data.data.shipping_address.__firstName }}' }}",
+                                        "target": {
+                                            "path": "address.shipping_firstName",
+                                            "types": ["data", "remindedData"] 
+                                        }
+                                    },
+                                    {
+                                        "value": "{{ '{{ flow_data.data.shipping_address.__lastName }}' }}",
+                                        "target": {
+                                            "path": "address.shipping_lastName",
+                                            "types": ["data", "remindedData"] 
+                                        }
+                                    },
+                                    {
+                                        "value": "{{ '{{ flow_data.data.shipping_address.__address1 }}' }}",
+                                        "target": {
+                                            "path": "address.shipping_address1",
+                                            "types": ["data", "remindedData"] 
+                                        }
+                                    },
+                                    {
+                                        "value": "{{ '{{ flow_data.data.shipping_address.__address2 }}' }}",
+                                        "target": {
+                                            "path": "address.shipping_address2",
+                                            "types": ["data", "remindedData"] 
+                                        }
+                                    },
+                                    {
+                                        "value": "{{ '{{ flow_data.data.shipping_address.__zipCode }}' }}",
+                                        "target": {
+                                            "path": "address.shipping_zipCode",
+                                            "types": ["data", "remindedData"] 
+                                        }
+                                    },
+                                    {
+                                        "value": "{{ '{{ flow_data.data.shipping_address.__city }}' }}",
+                                        "target": {
+                                            "path": "address.shipping_city",
+                                            "types": ["data", "remindedData"] 
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "single",
+            "options": {
+                "source": "payment",
+                "destination": "confirmation",
+                "next_options": {
+                    "label": "VALIDER"
                 }
             }
         }

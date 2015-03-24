@@ -2,15 +2,19 @@
 class Step implements Drawable {
   private final int FONT_SIZE = 20;
   private final int DEFAULT_PADDING = 10;
+  private final int PATH_HEIGHT = 20;
 
   private String name;
   private Point origin;
   private boolean fixed;
   private Box box;
-  private ArrayList paths;
+  private ArrayList inPaths;
+  private ArrayList outPaths;
 
   public Step(String name, Point origin) {
-    this.paths = new ArrayList();
+    this.inPaths = new ArrayList();
+    this.outPaths = new ArrayList();
+    
     this.name = name;
     textSize(this.FONT_SIZE);
     this.origin = origin;
@@ -19,7 +23,9 @@ class Step implements Drawable {
   }
 
   public Step(String name) {
-    this.paths = new ArrayList();
+    this.inPaths = new ArrayList();
+    this.outPaths = new ArrayList();
+    
     this.name = name;
     textSize(this.FONT_SIZE);
     this.origin = new Point(10, (this.DEFAULT_PADDING + textAscent()));
@@ -27,14 +33,43 @@ class Step implements Drawable {
     this.initBox();
   }
 
-  public void addPath(Path path){
-    this.paths.add(path);
+  public void addIn(Path path){
+    this.inPaths.add(path);
+    this.refreshPathsEnd();
   }
   
-  public void notifyPaths(){
-    for(int i=0;i<this.paths.size();i++){
-      this.paths.get(i).update();
+  public void addOut(Path path){
+    this.outPaths.add(path);
+    this.refreshPathsOrigin();
+  }
+  
+  private void refreshPathsOrigin(){
+    int pathWidth = this.box.getSize().getWidth()/this.outPaths.size();
+    Point origin = new Point(this.box.getOrigin().getX(), this.box.getOrigin().getY()+this.box.getSize().getHeight());
+    
+    for(int i=0;i<this.outPaths.size();i++){
+      this.outPaths.get(i).setOrigin(origin);
+      this.outPaths.get(i).setSize(new Dimension(pathWidth,this.PATH_HEIGHT));
+      this.outPaths.get(i).update();
+      
+      origin = new Point(origin.getX()+pathWidth,origin.getY());
     }
+  }
+  
+  private void refreshPathsEnd(){
+    Point end = new Point(this.box.getOrigin().getX()+(this.box.getSize().getWidth()/(this.outPaths.size()+1)), this.box.getOrigin().getY());
+    
+    for(int i=0;i<this.inPaths.size();i++){
+      this.inPaths.get(i).setEnd(end);
+      this.inPaths.get(i).update();
+      
+      end = new Point(end.getX()+(this.box.getSize().getWidth()/(this.outPaths.size()+1)),origin.getY());
+    }
+  }
+  
+  public void refreshPaths(){
+    this.refreshPathsOrigin();
+    this.refreshPathsEnd();
   }
 
   private void initBox() {

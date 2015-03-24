@@ -23,12 +23,5 @@ Jsonmapper.prototype.drawStep = function(key, step) {
 };
 
 Jsonmapper.prototype.drawPath = function(key, path) {
-    switch (path.type) {
-        case "end" :
-            //TODO
-            break;
-
-        default :
-            pjs.addPath(key, path.options.source, path.options.destination);
-    }
+            pjs.addPath(path.options.next_options.label, path.options.source, path.options.destination, path.type, path.options.events);
 };

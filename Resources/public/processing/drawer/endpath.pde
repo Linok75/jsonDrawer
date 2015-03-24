@@ -1,5 +1,5 @@
 //Draw a path
-class Path implements Drawable {
+class EndPath implements Drawable {
   private final int FONT_SIZE = 10;
   private final int DEFAULT_PADDING = 10;
   private final int ARROW_SIZE = 10;
@@ -14,18 +14,12 @@ class Path implements Drawable {
   private Point[] base;
   private Dimension size;
 
-  private Step source;
-  private Step destination;
-
-  public Path(String name, Step source, Step destination, Object events) {
+  public EndPath(String name, Step source, Step destination, Object events) {
     this.name = name;
     this.fixed = false;
 
     this.origin = null;
     this.end = null;
-
-    this.source = source;
-    this.destination = destination;
 
     source.addOut(this); //Add to the path list of the step (used to call update() when the step moved)
     destination.addIn(this);
@@ -45,17 +39,8 @@ class Path implements Drawable {
     this.arrow[2] = new Point(this.arrow[0].getX()-this.ARROW_SIZE/2, this.arrow[0].getY()-this.ARROW_SIZE);
 
     this.points.add(this.base[2]);
-    if (this.end.getY()<this.origin.getY()) {
-      if (this.origin.getX() >= this.source.getBox().getOrigin().getX()+this.source.getBox().getSize().getWidth()/2) {
-        this.points.add(new Point(this.points.get(this.points.size()-1).getX()+this.source.getBox().getSize().getWidth(), this.points.get(this.points.size()-1).getY()));
-      } else {
-        this.points.add(new Point(this.points.get(this.points.size()-1).getX()-this.source.getBox().getSize().getWidth(), this.points.get(this.points.size()-1).getY()));
-      }
-      this.points.add(new Point(this.points.get(this.points.size()-1).getX(), this.end.getY()-this.ARROW_SIZE));
-    } else {
-      this.points.add(new Point(this.base[2].getX(), this.base[2].getY() + (this.arrow[0].getY() - this.base[2].getY() - this.ARROW_SIZE - this.DEFAULT_PADDING)/2));
-      this.points.add(new Point(this.arrow[0].getX(), this.points.get(1).getY()));
-    }
+    this.points.add(new Point(this.base[2].getX(), this.base[2].getY() + (this.arrow[0].getY() - this.base[2].getY() - this.ARROW_SIZE - this.DEFAULT_PADDING)/2));
+    this.points.add(new Point(this.arrow[0].getX(), this.points.get(1).getY()));
     this.points.add(new Point(this.arrow[0].getX(), this.arrow[1].getY()));
   }
 
@@ -73,14 +58,14 @@ class Path implements Drawable {
 
   public void setOrigin(Point origin) {
     this.origin = origin;
-    if (this.end != null) {
+    if(this.end != null){
       this.fixed = true;
     }
   }
 
   public void setEnd(Point end) {
     this.end = end;
-    if (this.origin != null) {
+    if(this.origin != null){
       this.fixed = true;
     }
   }
@@ -110,16 +95,14 @@ class Path implements Drawable {
   }
 
   public void draw() {
-    stroke(0);
-    fill(255);
     for (int i = 1; i<this.points.size (); i++) {
       triangle(this.base[0].getX(), this.base[0].getY(), this.base[1].getX(), this.base[1].getY(), this.base[2].getX(), this.base[2].getY());
       line(this.points.get(i-1).getX(), this.points.get(i-1).getY(), this.points.get(i).getX(), this.points.get(i).getY());
+      stroke(0);
+      fill(255);
     }
 
-    fill(0);
     triangle(this.arrow[0].getX(), this.arrow[0].getY(), this.arrow[1].getX(), this.arrow[1].getY(), this.arrow[2].getX(), this.arrow[2].getY());
-    text(this.name, this.orgin.getX(), this.origin.getY(), this.size.getWidth(), this.size.getHeight());
   }
 }
 
