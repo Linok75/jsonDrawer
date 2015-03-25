@@ -1,8 +1,9 @@
 //Draw a path
 class Path implements Drawable {
   private final int FONT_SIZE = 10;
-  private final int DEFAULT_PADDING = 10;
+  private final int DEFAULT_PADDING = 5;
   private final int ARROW_SIZE = 10;
+  private final int INFO_BUTTON_SIZE = 15;
 
   private String name;
   private ArrayList points;
@@ -110,16 +111,44 @@ class Path implements Drawable {
   }
 
   public void draw() {
+    smooth();
+    strokeJoin(ROUND);
+    strokeCap(ROUND);
+    strokeWeight(1);
+
     stroke(0);
     fill(255);
     for (int i = 1; i<this.points.size (); i++) {
-      triangle(this.base[0].getX(), this.base[0].getY(), this.base[1].getX(), this.base[1].getY(), this.base[2].getX(), this.base[2].getY());
       line(this.points.get(i-1).getX(), this.points.get(i-1).getY(), this.points.get(i).getX(), this.points.get(i).getY());
     }
 
+    triangle(this.base[0].getX(), this.base[0].getY(), this.base[1].getX(), this.base[1].getY(), this.base[2].getX(), this.base[2].getY());
+
+
     fill(0);
     triangle(this.arrow[0].getX(), this.arrow[0].getY(), this.arrow[1].getX(), this.arrow[1].getY(), this.arrow[2].getX(), this.arrow[2].getY());
-    text(this.name, this.orgin.getX(), this.origin.getY(), this.size.getWidth(), this.size.getHeight());
+    /*   
+     textSize(this.FONT_SIZE);
+     textAlign(CENTER);
+     text(this.name, this.base[2].getX(), this.origin.getY() + (textAscent()+textDescent()) + this.DEFAULT_PADDING, this.size.getWidth());
+     */
+  }
+  
+  public void overDraw(){
+    fill(0,200);
+    stroke(0,0);
+    rect(0,0,width,height);
+    
+    this.draw();
+    
+    fill(0);
+    ellipse(this.base[2].getX(), this.base[1].getY() + this.size.getHeight()/2, this.INFO_BUTTON_SIZE, this.INFO_BUTTON_SIZE);
+    
+    
+    fill(255);
+    textMode(CENTER);
+    textSize(15);
+    text("i", this.base[2].getX() - textWidth("i")/2, this.base[1].getY() + this.size.getHeight()/2 + 5);
   }
 }
 

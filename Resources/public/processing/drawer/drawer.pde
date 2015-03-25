@@ -1,17 +1,17 @@
+/* @pjs transparent="true"; */
+
 private float framerate = 10;
 private int minY = 50; //Top of ordinate axe
 private ArrayList drawables; //Elements to draw
 private Point topPosition; //Default position of the first element
 private Step stepFocused = null;
+private Drawable elementOverDrawed = null;
 
 //Init drawer
 public void setup() {
   size(500, 500);
   frameRate(framerate);
   noLoop();
-  stroke(#000000);
-  fill(#ffffff);
-  background(#ffffff);
 
   this.drawables = new ArrayList();
   this.topPosition = new Point(width/2, minY);
@@ -20,7 +20,6 @@ public void setup() {
 //Draw on canvas
 public void draw() {
   background(204);
-
   for (int i=0; i<this.drawables.size (); i++) {
     this.drawables.get(i).draw();
   }
@@ -40,14 +39,35 @@ public void mousePressed() {
 
 public void mouseDragged() {
   if (this.stepFocused != null) {
-    this.stepFocused.setOrigin(new Point(mouseX,mouseY));
+    this.stepFocused.setOrigin(new Point(mouseX, mouseY));
     this.stepFocused.refreshPaths();
     redraw();
   }
 }
 
-public void mouseReleased(){
+public void mouseReleased() {
   this.stepFocused = null;
+}
+
+public void mouseMoved() {
+  boolean overred = false;
+  
+  for (int i=0; i<this.drawables.size (); i++) {
+    if (this.drawables.get(i).getBox().contain(new Point(mouseX, mouseY))) {
+      overred = true;
+      if(elementOverDrawed != this.drawables.get(i)){
+        elementOverDrawed = this.drawables.get(i);
+        redraw();
+        this.drawables.get(i).overDraw();
+      }
+      break;
+    }
+  }
+  
+  if(!overred){
+    elementOverDrawed = null;
+    redraw();
+  }
 }
 
 //Set canvas size
@@ -104,9 +124,9 @@ public void addPath(String name, String srcName, String destName, String type, O
     }
   }
 
-  if(type != "end"){
+  if (type != "end") {
     this.drawables.add(new Path(name, source, destination, events));
-  }else{
+  } else {
     //this.drawables.add(new EndPath(name, source, events));
   }
   this.redraw();

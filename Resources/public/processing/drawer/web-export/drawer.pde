@@ -1,17 +1,17 @@
+/* @pjs transparent="true"; */
+
 private float framerate = 10;
 private int minY = 50; //Top of ordinate axe
 private ArrayList drawables; //Elements to draw
 private Point topPosition; //Default position of the first element
 private Step stepFocused = null;
+private Drawable elementOverDrawed = null;
 
 //Init drawer
 public void setup() {
   size(500, 500);
   frameRate(framerate);
   noLoop();
-  stroke(#000000);
-  fill(#ffffff);
-  background(#ffffff);
 
   this.drawables = new ArrayList();
   this.topPosition = new Point(width/2, minY);
@@ -20,7 +20,6 @@ public void setup() {
 //Draw on canvas
 public void draw() {
   background(204);
-
   for (int i=0; i<this.drawables.size (); i++) {
     this.drawables.get(i).draw();
   }
@@ -40,14 +39,35 @@ public void mousePressed() {
 
 public void mouseDragged() {
   if (this.stepFocused != null) {
-    this.stepFocused.setOrigin(new Point(mouseX,mouseY));
+    this.stepFocused.setOrigin(new Point(mouseX, mouseY));
     this.stepFocused.refreshPaths();
     redraw();
   }
 }
 
-public void mouseReleased(){
+public void mouseReleased() {
   this.stepFocused = null;
+}
+
+public void mouseMoved() {
+  boolean overred = false;
+  
+  for (int i=0; i<this.drawables.size (); i++) {
+    if (this.drawables.get(i).getBox().contain(new Point(mouseX, mouseY))) {
+      overred = true;
+      if(elementOverDrawed != this.drawables.get(i)){
+        elementOverDrawed = this.drawables.get(i);
+        redraw();
+        this.drawables.get(i).overDraw();
+      }
+      break;
+    }
+  }
+  
+  if(!overred){
+    elementOverDrawed = null;
+    redraw();
+  }
 }
 
 //Set canvas size
@@ -104,9 +124,9 @@ public void addPath(String name, String srcName, String destName, String type, O
     }
   }
 
-  if(type != "end"){
+  if (type != "end") {
     this.drawables.add(new Path(name, source, destination, events));
-  }else{
+  } else {
     //this.drawables.add(new EndPath(name, source, events));
   }
   this.redraw();
@@ -115,6 +135,7 @@ public void addPath(String name, String srcName, String destName, String type, O
 //Box (for other elements or juste draw a box(rect))
 class Box implements Drawable {
   public final static int DEFAULT_MARGIN = 50;
+  private final int DEFAULT_RADIUS = 3;
 
   private Point origin;
   private boolean fixed;
@@ -129,7 +150,7 @@ class Box implements Drawable {
   public void draw() {
     stroke(0, 0, 0);
     fill(255, 255, 255);
-    rect(this.origin.getX(), this.origin.getY(), this.size.getWidth(), this.size.getHeight());
+    rect(this.origin.getX(), this.origin.getY(), this.size.getWidth(), this.size.getHeight(), this.DEFAULT_RADIUS);
   }
 
   public boolean isFixed() {
@@ -281,8 +302,9 @@ class EndPath implements Drawable {
 //Draw a path
 class Path implements Drawable {
   private final int FONT_SIZE = 10;
-  private final int DEFAULT_PADDING = 10;
+  private final int DEFAULT_PADDING = 5;
   private final int ARROW_SIZE = 10;
+  private final int INFO_BUTTON_SIZE = 15;
 
   private String name;
   private ArrayList points;
@@ -390,16 +412,44 @@ class Path implements Drawable {
   }
 
   public void draw() {
+    smooth();
+    strokeJoin(ROUND);
+    strokeCap(ROUND);
+    strokeWeight(1);
+
     stroke(0);
     fill(255);
     for (int i = 1; i<this.points.size (); i++) {
-      triangle(this.base[0].getX(), this.base[0].getY(), this.base[1].getX(), this.base[1].getY(), this.base[2].getX(), this.base[2].getY());
       line(this.points.get(i-1).getX(), this.points.get(i-1).getY(), this.points.get(i).getX(), this.points.get(i).getY());
     }
 
+    triangle(this.base[0].getX(), this.base[0].getY(), this.base[1].getX(), this.base[1].getY(), this.base[2].getX(), this.base[2].getY());
+
+
     fill(0);
     triangle(this.arrow[0].getX(), this.arrow[0].getY(), this.arrow[1].getX(), this.arrow[1].getY(), this.arrow[2].getX(), this.arrow[2].getY());
-    text(this.name, this.orgin.getX(), this.origin.getY(), this.size.getWidth(), this.size.getHeight());
+    /*   
+     textSize(this.FONT_SIZE);
+     textAlign(CENTER);
+     text(this.name, this.base[2].getX(), this.origin.getY() + (textAscent()+textDescent()) + this.DEFAULT_PADDING, this.size.getWidth());
+     */
+  }
+  
+  public void overDraw(){
+    fill(0,200);
+    stroke(0,0);
+    rect(0,0,width,height);
+    
+    this.draw();
+    
+    fill(0);
+    ellipse(this.base[2].getX(), this.base[1].getY() + this.size.getHeight()/2, this.INFO_BUTTON_SIZE, this.INFO_BUTTON_SIZE);
+    
+    
+    fill(255);
+    textMode(CENTER);
+    textSize(15);
+    text("i", this.base[2].getX() - textWidth("i")/2, this.base[1].getY() + this.size.getHeight()/2 + 5);
   }
 }
 
@@ -486,7 +536,9 @@ class Step implements Drawable {
 
   public void setOrigin(Point origin) {
     this.origin = origin;
-    this.box.setOrigin(new Point(this.origin.getX() - this.DEFAULT_PADDING, this.origin.getY()-(this.DEFAULT_PADDING + textAscent())));
+    textSize(this.FONT_SIZE);
+    //this.box.setOrigin(new Point(this.origin.getX() - this.DEFAULT_PADDING, this.origin.getY()-(this.DEFAULT_PADDING + textAscent())));
+    this.initBox();
     this.fixed = true;
   }
 
@@ -499,6 +551,7 @@ class Step implements Drawable {
   }
 
   public Dimension getSize() {
+    textSize(this.FONT_SIZE);
     return new Dimension(textWidth(this.name), (textAscent() + textDescent()));
   }
 
@@ -513,9 +566,18 @@ class Step implements Drawable {
   public void draw() {
     this.box.draw();
 
-    fill(0, 0, 0);
+    fill(0);
     textSize(this.FONT_SIZE);
+    textAlign(LEFT,BASELINE);
     text(this.name, this.origin.getX(), this.origin.getY());
+  }
+  
+  public void overDraw(){
+    fill(0,200);
+    stroke(0,0);
+    rect(0,0,width,height);
+    
+    this.draw();
   }
 }
 

@@ -81,7 +81,9 @@ class Step implements Drawable {
 
   public void setOrigin(Point origin) {
     this.origin = origin;
-    this.box.setOrigin(new Point(this.origin.getX() - this.DEFAULT_PADDING, this.origin.getY()-(this.DEFAULT_PADDING + textAscent())));
+    textSize(this.FONT_SIZE);
+    //this.box.setOrigin(new Point(this.origin.getX() - this.DEFAULT_PADDING, this.origin.getY()-(this.DEFAULT_PADDING + textAscent())));
+    this.initBox();
     this.fixed = true;
   }
 
@@ -94,6 +96,7 @@ class Step implements Drawable {
   }
 
   public Dimension getSize() {
+    textSize(this.FONT_SIZE);
     return new Dimension(textWidth(this.name), (textAscent() + textDescent()));
   }
 
@@ -108,9 +111,18 @@ class Step implements Drawable {
   public void draw() {
     this.box.draw();
 
-    fill(0, 0, 0);
+    fill(0);
     textSize(this.FONT_SIZE);
+    textAlign(LEFT,BASELINE);
     text(this.name, this.origin.getX(), this.origin.getY());
+  }
+  
+  public void overDraw(){
+    fill(0,200);
+    stroke(0,0);
+    rect(0,0,width,height);
+    
+    this.draw();
   }
 }
 

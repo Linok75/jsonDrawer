@@ -1,6 +1,7 @@
 //Box (for other elements or juste draw a box(rect))
 class Box implements Drawable {
   public final static int DEFAULT_MARGIN = 50;
+  private final int DEFAULT_RADIUS = 3;
 
   private Point origin;
   private boolean fixed;
@@ -15,7 +16,7 @@ class Box implements Drawable {
   public void draw() {
     stroke(0, 0, 0);
     fill(255, 255, 255);
-    rect(this.origin.getX(), this.origin.getY(), this.size.getWidth(), this.size.getHeight());
+    rect(this.origin.getX(), this.origin.getY(), this.size.getWidth(), this.size.getHeight(), this.DEFAULT_RADIUS);
   }
 
   public boolean isFixed() {

@@ -1,4 +1,4 @@
-/* global json */
+/* global json, infoImg */
 
 var pjs;
 var jsonmapper;
