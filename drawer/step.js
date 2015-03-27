@@ -1,6 +1,5 @@
 define(
     [
-        
     ],
     function()
     {
@@ -32,6 +31,11 @@ define(
 
             this.name.x = this.box.x + this.PADDING;
             this.name.y = this.box.y + this.PADDING;
+        };
+
+        Step.prototype.getName = function()
+        {
+            return this.name.text;
         };
 
 //Return all elements should be drawed
@@ -114,11 +118,11 @@ define(
                 );
 
             for (path in this.inPaths) {
-                path.setEndPoint(point);
+                path.setStartPoint(point);
                 point.x = point.x + this.getOuterBounds().width / (this.inPaths.length + 1);
             }
         };
-        
+
         return Step;
     }
 );

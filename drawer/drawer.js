@@ -45,13 +45,13 @@ define(
             }
 
             this.stage.update();
-            this.steps.push(step);
+            this.steps[step.getName()] = step;
         };
 
 //Add path to canvas
         Drawer.prototype.addPath = function(key, path)
         {
-            var path = new Path(key, this.getStep(path.source), this.getStep(path.destination), new Infos(path));
+            var path = new Path(key, this.getStep(path.options.source), this.getStep(path.options.destination), new Infos(path));
 
             //Add all step's elements we need to draw on canvas
             for (child in path.getChildren()) {
@@ -79,7 +79,11 @@ define(
 
         Drawer.prototype.getStep = function(name)
         {
-
+            if( typeof(this.steps[name]) === 'undefined' ){
+                throw Error("Require step " + name + " is undefined.");
+            }
+            
+            return this.steps[name];
         };
 
         return Drawer;
