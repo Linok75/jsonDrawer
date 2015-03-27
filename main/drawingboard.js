@@ -1,26 +1,31 @@
-var drawer;
-var jsonmapper;
+'use strict';
 
-include
-(
-    [
-        "lib/jquery.js",
-        "lib/easeljs.min.js",
-        "main/jsonexample.js",
-        "main/jsonmapper.js",
-        "drawer/drawer.js",
-        "drawer/step.js",
-        "drawer/path.js",
-        "drawer/infos.js"
-    ],
-    function() 
+requirejs.config(
     {
-        return true;
+        paths: {
+            'jquery': 'lib/jquery',
+            'data': 'main/jsonexample',
+            'mapper': 'main/jsonmapper'
+        }
     }
 );
 
-function init()
+define('jquery-private', ['jquery'], function(jq)
 {
-    drawer = new Drawer(new createjs.Stage("drawingboard"));
-    jsonmapper = new Jsonmapper(json);
-}
+    return jq.noConflict(true);
+});
+
+require(
+    [
+        'jquery-private',
+        'data',
+        'mapper'
+    ],
+    function($, json, Jsonmapper)
+    {
+        $(document).ready(function()
+        {
+            var mapper = new Jsonmapper(json);
+        });
+    }
+);

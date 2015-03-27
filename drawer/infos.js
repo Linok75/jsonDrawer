@@ -1,4 +1,13 @@
-function Infos(obj)
-{
-    
-}
+define(
+    [
+    ],
+    function()
+    {
+        function Infos(obj)
+        {
+
+        }
+        
+        return Infos;
+    }
+);
