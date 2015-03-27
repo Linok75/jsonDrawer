@@ -1,24 +1,26 @@
-/* global json */
-
 var drawer;
 var jsonmapper;
 
-include(
+include
+(
     [
         "lib/jquery.js",
         "lib/easeljs.min.js",
         "main/jsonexample.js",
         "main/jsonmapper.js",
-        "easeljs/drawer.js",
-        "easeljs/step.js",
-        "easeljs/path.js"
+        "drawer/drawer.js",
+        "drawer/step.js",
+        "drawer/path.js",
+        "drawer/infos.js"
     ],
-    function() {
+    function() 
+    {
         return true;
     }
 );
 
-function init(){
+function init()
+{
     drawer = new Drawer(new createjs.Stage("drawingboard"));
     jsonmapper = new Jsonmapper(json);
 }
