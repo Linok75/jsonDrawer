@@ -27,10 +27,12 @@ define(
 
             this.nextOrigin = new createjs.Point(this.stage.canvas.width / 2, this.defaultMinYOrigin);
             this.steps = new Array();
+            this.paths = new Array();
 
             this.setBackground();
-        }
 
+        }
+        
 //Add step to canvas
         Drawer.prototype.addStep = function(key, step)
         {
@@ -59,6 +61,7 @@ define(
             }
 
             this.stage.update();
+            this.paths[path.getName()] = path;
         };
 
 //Set canvas background

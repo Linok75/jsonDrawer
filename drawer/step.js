@@ -5,19 +5,24 @@ define(
     {
         function Step(origin, name, infos)
         {
+            this.STROKE_STYLE = 2;
             this.FONT_STYLE = "Arial";
             this.FONT_SIZE = "20px";
             this.FONT_COLOR = "#000000";
             this.PADDING = 10;
-            this.MARGIN = 50;
+            this.MARGIN = 80;
             this.RADIUS = 5; //Round rect radius
 
             this.infos = infos;
             this.inPaths = new Array();
             this.outPaths = new Array();
+            this.shape = new createjs.Shape();
             this.name = new createjs.Text(name, this.FONT_SIZE + " " + this.FONT_STYLE, this.FONT_COLOR);
+            this.infosButton = new createjs.Bitmap();
 
             this.setBox(origin);
+            this.initInfosButton();
+            this.addEventListener();
         }
 
         Step.prototype.setBox = function(origin)
@@ -31,6 +36,8 @@ define(
 
             this.name.x = this.box.x + this.PADDING;
             this.name.y = this.box.y + this.PADDING;
+            
+            this.initBoxShape();
         };
 
         Step.prototype.getName = function()
@@ -41,7 +48,8 @@ define(
 //Return all elements should be drawed
         Step.prototype.getChildren = function()
         {
-            var children = [this.getBoxShape(), this.name];
+            this.initBoxShape();
+            var children = [this.shape, this.name];
             return children;
         };
 
@@ -64,21 +72,60 @@ define(
         };
 
 //Return the box shape to draw it
-        Step.prototype.getBoxShape = function()
+        Step.prototype.initBoxShape = function()
         {
             var graphics = new createjs.Graphics();
 
-            graphics.setStrokeStyle(1);
+            graphics.setStrokeStyle(this.STROKE_STYLE);
             graphics.beginStroke(createjs.Graphics.getRGB(0, 0, 0));
             graphics.beginFill(createjs.Graphics.getRGB(255, 255, 255));
 
             graphics.drawRoundRect(0, 0, this.box.width, this.box.height, this.RADIUS);
 
-            var shape = new createjs.Shape(graphics);
-            shape.x = this.box.x;
-            shape.y = this.box.y;
-
-            return shape;
+            this.shape.graphics = graphics;
+            this.shape.x = this.box.x;
+            this.shape.y = this.box.y;
+        };
+        
+        Step.prototype.addEventListener = function()
+        {
+            var _self = this;
+            
+            this.shape.on("pressmove", function(e)
+            {
+                _self.setBox(new createjs.Point(e.stageX,e.stageY));
+                _self.refreshOutPathsStartPoint();
+                _self.refreshInPathsEndPoint();
+                e.target.stage.update();
+            }).bind(_self);
+            
+            this.shape.on("mouseover", function(e)
+            {
+                _self.refreshInfosButton();
+                console.log(_self.infosButton);
+                e.target.stage.addChild(_self.infosButton);
+            }).bind(_self);
+            
+            this.shape.on("mouseout", function(e)
+            {
+                _self.refreshInfosButton();
+                console.log(_self.infosButton);
+                e.target.stage.removeChild(_self.infosButton);
+            }).bind(_self);
+        };
+        
+        Step.prototype.initInfosButton = function()
+        {
+            var img = new Image();
+            img.src = "images/info_icon.svg";
+            
+            this.infosButton.image = img;
+        };
+        
+        Step.prototype.refreshInfosButton = function()
+        {
+            this.infosButton.x = this.box.x + this.PADDING;
+            this.infosButton.y = this.box.y + this.PADDING;
         };
 
 //add path (somewhere to this)
@@ -97,8 +144,10 @@ define(
                 );
 
             for (path in this.inPaths) {
-                path.setEndPoint(point);
-                point.x = point.x + this.getOuterBounds().width / (this.inPaths.length + 1);
+                this.inPaths[path].setEndPoint(point);
+                point = new createjs.Point(point.x + this.getOuterBounds().width / (this.inPaths.length + 1),
+                    point.y
+                    );
             }
         };
 
@@ -114,12 +163,13 @@ define(
         {
             var point = new createjs.Point(
                 this.getOuterBounds().x + this.getOuterBounds().width / (this.outPaths.length + 1),
-                this.getOuterBounds().y
+                this.getOuterBounds().y + this.getOuterBounds().height
                 );
 
-            for (path in this.inPaths) {
-                path.setStartPoint(point);
-                point.x = point.x + this.getOuterBounds().width / (this.inPaths.length + 1);
+            for (path in this.outPaths) {
+                this.outPaths[path].setMaxWidth(this.getOuterBounds().width / (this.outPaths.length + 1));
+                this.outPaths[path].setStartPoint(point);
+                point.x = point.x + this.getOuterBounds().width / (this.outPaths.length + 1);
             }
         };
 

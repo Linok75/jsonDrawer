@@ -29,7 +29,7 @@ define(
             }
 
             for (path in this.json.paths) {
-                this.drawPath(path, this.json.paths[path]);
+                this.drawPath(this.json.paths[path].options.next_options.label, this.json.paths[path]);
             }
         };
 
