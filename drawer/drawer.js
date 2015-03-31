@@ -1,3 +1,6 @@
+
+var changed = false;
+
 requirejs.config(
     {
         paths: {
@@ -21,18 +24,41 @@ define(
         {
             this.defaultMinYOrigin = 50;
             this.stage = stage;
-
-            this.stage.canvas.width = $(window).width();
-            this.stage.canvas.height = $(window).height();
+            this.background = new createjs.Shape();
+            this.resize();
+            
+            this.stage.enableMouseOver(10);
+            this.stage.mouseMoveOutside = true;
 
             this.nextOrigin = new createjs.Point(this.stage.canvas.width / 2, this.defaultMinYOrigin);
             this.steps = new Array();
             this.paths = new Array();
 
-            this.setBackground();
-
+            var self = this;
+            $( window ).resize(function(){
+                self.resize();
+            });
+            
+            createjs.Ticker.addEventListener("tick", function(event) {
+                self.tick(event);
+            });
         }
         
+        Drawer.prototype.resize = function() {
+            this.stage.canvas.width = $(window).width();
+            this.stage.canvas.height = $(window).height();
+            this.stage.removeChild(this.background);
+            this.setBackground();
+        };
+
+        Drawer.prototype.tick = function(event) {
+            // this set makes it so the stage only re-renders when an event handler indicates a change has happened.
+            if (changed) {
+                changed = false; // only update once
+                this.stage.update(event);
+            }
+        };
+
 //Add step to canvas
         Drawer.prototype.addStep = function(key, step)
         {
@@ -72,20 +98,20 @@ define(
             graphics.beginFill(createjs.Graphics.getRGB(183, 196, 189));
             graphics.drawRect(0, 0, this.stage.canvas.width, this.stage.canvas.height);
 
-            var shape = new createjs.Shape(graphics);
-            shape.x = 0;
-            shape.y = 0;
+            this.background.graphics = graphics;
+            this.background.x = 0;
+            this.background.y = 0;
 
-            this.stage.addChild(shape);
+            this.stage.addChildAt(this.background,0);
             this.stage.update();
         };
 
         Drawer.prototype.getStep = function(name)
         {
-            if( typeof(this.steps[name]) === 'undefined' ){
+            if (typeof (this.steps[name]) === 'undefined') {
                 throw Error("Require step " + name + " is undefined.");
             }
-            
+
             return this.steps[name];
         };
 
