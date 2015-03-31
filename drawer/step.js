@@ -102,7 +102,6 @@ define(
                 self.refreshOutPathsStartPoint();
                 self.refreshInPathsEndPoint();
                 self.refreshInfosButton();
-//                e.target.stage.update();
                 changed = true;
             }).bind(self);
 
@@ -110,14 +109,21 @@ define(
             {
                 self.refreshInfosButton();
                 e.target.stage.addChild(self.infosButton);
-                //                e.target.stage.update();
                 changed = true;
             }).bind(self);
 
             this.shape.on("mouseout", function(e)
             {
-                e.target.stage.removeChild(self.infosButton);
-                //                e.target.stage.update();
+                if (!self.infosButton.getBounds().contains(e.stageX, e.stageY)) {
+                    e.target.stage.removeChild(self.infosButton);
+                    changed = true;
+                }
+            }).bind(self);
+
+            this.infosButton.on("click", function(e) {
+                for (var child in self.infos.getChildren()) {
+                    e.target.stage.addChild(self.infos.getChildren()[child]);
+                }
                 changed = true;
             }).bind(self);
         };
@@ -130,12 +136,29 @@ define(
             this.infosButton.image = img;
             this.infosButton.scaleX = this.INFOS_BUTTON_SCALE;
             this.infosButton.scaleY = this.INFOS_BUTTON_SCALE;
+
+            var oldBounds = this.infosButton.getBounds();
+            this.infosButton.setBounds(
+                oldBounds.x,
+                oldBounds.y,
+                oldBounds.width * this.INFOS_BUTTON_SCALE,
+                oldBounds.height * this.INFOS_BUTTON_SCALE
+                );
         };
 
         Step.prototype.refreshInfosButton = function()
         {
+            var oldBounds = this.infosButton.getBounds();
+
             this.infosButton.x = this.box.x + 2;
             this.infosButton.y = this.box.y + 2;
+
+            this.infosButton.setBounds(
+                this.infosButton.x,
+                this.infosButton.y,
+                oldBounds.width,
+                oldBounds.height
+                );
         };
 
 //add path (somewhere to this)

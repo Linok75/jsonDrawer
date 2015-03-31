@@ -1,3 +1,4 @@
+'use strict';
 define(
     [
     ],
@@ -6,8 +7,8 @@ define(
         function Path(name, source, destination, infos)
         {
             this.STROKE_STYLE = 2;
-            this.STROKE_COLOR = createjs.Graphics.getRGB(4,97,201);
-            this.FILL_COLOR = createjs.Graphics.getRGB(255,255,255);
+            this.STROKE_COLOR = createjs.Graphics.getRGB(4, 97, 201);
+            this.FILL_COLOR = createjs.Graphics.getRGB(255, 255, 255);
             this.FONT_SIZE = "10px";
             this.FONT_STYLE = "Arial";
             this.FONT_COLOR = "#000000";
@@ -101,14 +102,21 @@ define(
             {
                 self.refreshInfosButton();
                 e.target.stage.addChild(self.infosButton);
-                //                e.target.stage.update();
                 changed = true;
             }).bind(self);
 
             this.boxShape.on("mouseout", function(e)
             {
-                e.target.stage.removeChild(self.infosButton);
-                //                e.target.stage.update();
+                if (!self.infosButton.getBounds().contains(e.stageX, e.stageY)) {
+                    e.target.stage.removeChild(self.infosButton);
+                    changed = true;
+                }
+            }).bind(self);
+
+            this.infosButton.on("click", function(e) {
+                for (var child in self.infos.getChildren()) {
+                    e.target.stage.addChild(self.infos.getChildren()[child]);
+                }
                 changed = true;
             }).bind(self);
         };
@@ -121,12 +129,29 @@ define(
             this.infosButton.image = img;
             this.infosButton.scaleX = this.INFOS_BUTTON_SCALE;
             this.infosButton.scaleY = this.INFOS_BUTTON_SCALE;
+
+            var oldBounds = this.infosButton.getBounds();
+            this.infosButton.setBounds(
+                oldBounds.x,
+                oldBounds.y,
+                oldBounds.width * this.INFOS_BUTTON_SCALE,
+                oldBounds.height * this.INFOS_BUTTON_SCALE
+                );
         };
 
         Path.prototype.refreshInfosButton = function()
         {
-            this.infosButton.x = this.startPoint.x - (this.infosButton.getBounds().width * this.INFOS_BUTTON_SCALE)/2;
-            this.infosButton.y = this.startPoint.y + this.box.height - this.PADDING - (this.infosButton.getBounds().height * this.INFOS_BUTTON_SCALE)/2;
+            var oldBounds = this.infosButton.getBounds();
+
+            this.infosButton.x = this.startPoint.x - this.infosButton.getBounds().width / 2;
+            this.infosButton.y = this.startPoint.y + this.box.height - this.PADDING - this.infosButton.getBounds().height / 2;
+
+            this.infosButton.setBounds(
+                this.infosButton.x,
+                this.infosButton.y,
+                oldBounds.width,
+                oldBounds.height
+                );
         };
 
         Path.prototype.initPathShape = function()
@@ -150,8 +175,8 @@ define(
                 this.boxShape.graphics = graphics;
                 this.boxShape.x = this.box.x;
                 this.boxShape.y = this.box.y;
-                
-                
+
+
                 graphics = new createjs.Graphics();
 
                 graphics.setStrokeStyle(this.STROKE_STYLE);
@@ -163,15 +188,15 @@ define(
                     graphics.lineTo(this.box.x + this.box.width / 2, this.box.y + this.box.height + Math.abs((this.endPoint.y - this.startPoint.y) / 2));
                     graphics.lineTo(this.endPoint.x, this.box.y + this.box.height + Math.abs((this.endPoint.y - this.startPoint.y) / 2));
                 } else {
-                    graphics.lineTo(this.destination.getOuterBounds().x+this.destination.getOuterBounds().width + this.PADDING, this.box.y + this.box.height + this.PADDING * 2);
-                    graphics.lineTo(this.destination.getOuterBounds().x+this.destination.getOuterBounds().width + this.PADDING, this.destination.getOuterBounds().y -this.ARROW_SIZE - this.PADDING);
-                    graphics.lineTo(this.endPoint.x, this.destination.getOuterBounds().y -this.ARROW_SIZE - this.PADDING);
+                    graphics.lineTo(this.destination.getOuterBounds().x + this.destination.getOuterBounds().width + this.PADDING, this.box.y + this.box.height + this.PADDING * 2);
+                    graphics.lineTo(this.destination.getOuterBounds().x + this.destination.getOuterBounds().width + this.PADDING, this.destination.getOuterBounds().y - this.ARROW_SIZE - this.PADDING);
+                    graphics.lineTo(this.endPoint.x, this.destination.getOuterBounds().y - this.ARROW_SIZE - this.PADDING);
                 }
                 graphics.lineTo(this.endPoint.x, this.endPoint.y);
 
                 //Arrow
                 graphics.beginFill(this.STROKE_COLOR);
-                
+
                 graphics.lineTo(this.endPoint.x - this.ARROW_SIZE / 2, this.endPoint.y - this.ARROW_SIZE);
                 graphics.lineTo(this.endPoint.x + this.ARROW_SIZE / 2, this.endPoint.y - this.ARROW_SIZE);
                 graphics.lineTo(this.endPoint.x, this.endPoint.y);

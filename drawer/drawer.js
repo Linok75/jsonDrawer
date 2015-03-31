@@ -1,3 +1,4 @@
+'use strict';
 
 var changed = false;
 
@@ -26,7 +27,7 @@ define(
             this.stage = stage;
             this.background = new createjs.Shape();
             this.resize();
-            
+
             this.stage.enableMouseOver(10);
             this.stage.mouseMoveOutside = true;
 
@@ -35,15 +36,15 @@ define(
             this.paths = new Array();
 
             var self = this;
-            $( window ).resize(function(){
+            $(window).resize(function() {
                 self.resize();
             });
-            
+
             createjs.Ticker.addEventListener("tick", function(event) {
                 self.tick(event);
             });
         }
-        
+
         Drawer.prototype.resize = function() {
             this.stage.canvas.width = $(window).width();
             this.stage.canvas.height = $(window).height();
@@ -62,13 +63,23 @@ define(
 //Add step to canvas
         Drawer.prototype.addStep = function(key, step)
         {
-            var step = new Step(this.nextOrigin, key, new Infos(step));
+            var step = new Step(
+                this.nextOrigin,
+                key,
+                new Infos(
+                    step,
+                    new createjs.Point(
+                        this.stage.canvas.width / 2,
+                        this.stage.canvas.height / 2
+                        )
+                    )
+                );
 
             //update the position for the next step
             this.nextOrigin.y = this.nextOrigin.y + step.getOuterBounds().height + step.getMargin();
 
             //Add all step's elements we need to draw on canvas
-            for (child in step.getChildren()) {
+            for (var child in step.getChildren()) {
                 this.stage.addChild(step.getChildren()[child]);
             }
 
@@ -79,10 +90,21 @@ define(
 //Add path to canvas
         Drawer.prototype.addPath = function(key, path)
         {
-            var path = new Path(key, this.getStep(path.options.source), this.getStep(path.options.destination), new Infos(path));
-
+            var path = new Path(
+                key,
+                this.getStep(path.options.source),
+                this.getStep(path.options.destination),
+                new Infos(
+                    path,
+                    new createjs.Point(
+                        this.stage.canvas.width / 2,
+                        this.stage.canvas.height / 2
+                        )
+                    )
+                );
+            
             //Add all step's elements we need to draw on canvas
-            for (child in path.getChildren()) {
+            for (var child in path.getChildren()) {
                 this.stage.addChild(path.getChildren()[child]);
             }
 
@@ -102,7 +124,7 @@ define(
             this.background.x = 0;
             this.background.y = 0;
 
-            this.stage.addChildAt(this.background,0);
+            this.stage.addChildAt(this.background, 0);
             this.stage.update();
         };
 
