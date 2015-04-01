@@ -4,7 +4,7 @@ define(
         ],
         function ()
         {
-            function Infos(obj, origin)
+            function Infos(obj, maskBox)
             {
                 this.STROKE_STYLE = 2;
                 this.STROKE_COLOR = createjs.Graphics.getRGB(4, 97, 201);
@@ -17,18 +17,39 @@ define(
                 this.CLOSER_SCALE = 0.04;
 
                 this.infosString = "";
-                this.origin = origin;
                 this.addObjInfos(obj, 0);
 
                 this.crossBitmap = new createjs.Bitmap();
                 this.boxShape = new createjs.Shape();
                 this.infosDisplay = new createjs.Text(this.infosString, this.FONT_SIZE + " " + this.FONT_STYLE, this.FONT_COLOR);
+                this.maskBox = maskBox;
+                this.mask = new createjs.Shape();
 
+                this.initChildren();
+                this.addEventListener();
+            }
+            
+            Infos.prototype.initChildren = function() {
+                this.initMask();
                 this.initBox();
                 this.initBoxShape();
                 this.initCrossBitmap();
-                this.addEventListener();
-            }
+            };
+            
+            Infos.prototype.initMask = function() {
+                var graphics = new createjs.Graphics();
+                
+                graphics.drawRect(0, 0, this.maskBox.width, this.maskBox.height);
+                
+                this.mask.graphics = graphics;
+                this.mask.x = this.maskBox.x;
+                this.mask.y = this.maskBox.y;
+                
+                this.infosDisplay.mask = this.mask;
+                
+                this.infosDisplay.x = this.maskBox.x;
+                this.infosDisplay.y = this.maskBox.y;
+            };
 
             Infos.prototype.addEventListener = function ()
             {
@@ -68,14 +89,11 @@ define(
 
             Infos.prototype.initBox = function () {
                 this.box = new createjs.Rectangle(
-                        this.origin.x - this.getInnerBounds().width / 2 - this.PADDING,
-                        this.origin.y - this.getInnerBounds().height / 2 - this.PADDING,
-                        this.getInnerBounds().width + this.PADDING * 2,
-                        this.getInnerBounds().height + this.PADDING * 2
+                        this.maskBox.x - this.PADDING,
+                        this.maskBox.y - this.PADDING,
+                        this.maskBox.width + this.PADDING * 2,
+                        this.maskBox.height + this.PADDING * 2
                         );
-
-                this.infosDisplay.x = this.box.x + this.PADDING;
-                this.infosDisplay.y = this.box.y + this.PADDING;
             };
 
             Infos.prototype.initBoxShape = function () {
