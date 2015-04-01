@@ -27,10 +27,13 @@ define(
             {
                 this.defaultMinYOrigin = 50;
                 this.stage = stage;
+                
                 this.background = new createjs.Shape();
 
                 this.stage.enableMouseOver(10);
                 this.stage.mouseMoveOutside = true;
+
+                this.resize();
 
                 this.nextOrigin = new createjs.Point(this.stage.canvas.width / 2, this.defaultMinYOrigin);
                 this.steps = new Array();
@@ -51,9 +54,37 @@ define(
                 this.setBackground();
             };
 
+            Drawer.prototype.getNeededSize = function () {
+                var size = {"width": 0, "height": 0};
+                var bounds;
+                for (var step in this.steps) {
+                    bounds = this.steps[step].getOuterBounds();
+                    if (bounds.x + bounds.width + this.steps[step].getMargin() > size.width) {
+                        size.width = bounds.x + bounds.width + this.steps[step].getMargin();
+                    }
+                    if (bounds.y + bounds.height + this.steps[step].getMargin() > size.height) {
+                        size.height = bounds.y + bounds.height + this.steps[step].getMargin();
+                    }
+                }
+
+                return size;
+            };
+
             Drawer.prototype.resize = function () {
-                this.stage.canvas.width = $("#canvasContainer").width() * 0.6;
-                this.stage.canvas.height = $("#canvasContainer").height();
+                var size = this.getNeededSize();
+
+                if (size.width > $("#canvasViewer").width()) {
+                    this.stage.canvas.width = size.width;
+                } else {
+                    this.stage.canvas.width = $("#canvasViewer").width();
+                }
+
+                if (size.height > $("#canvasViewer").height()) {
+                    this.stage.canvas.height = size.height;
+                } else {
+                    this.stage.canvas.height = $("#canvasViewer").height();
+                }
+
                 this.stage.removeChild(this.background);
                 this.setBackground();
             };
@@ -62,6 +93,7 @@ define(
                 // this set makes it so the stage only re-renders when an event handler indicates a change has happened.
                 if (changed) {
                     changed = false; // only update once
+                    this.resize();
                     this.stage.update(event);
                 }
             };
@@ -93,7 +125,7 @@ define(
                     this.stage.addChild(step.getChildren()[child]);
                 }
 
-                this.stage.update();
+                changed = true;
                 this.steps[step.getName()] = step;
             };
 
@@ -122,7 +154,7 @@ define(
                     this.stage.addChild(path.getChildren()[child]);
                 }
 
-                this.stage.update();
+                changed = true;
                 this.paths[path.getName()] = path;
             };
 
@@ -139,7 +171,7 @@ define(
                 this.background.y = 0;
 
                 this.stage.addChildAt(this.background, 0);
-                this.stage.update();
+                changed = true;
             };
 
             Drawer.prototype.getStep = function (name)
@@ -154,7 +186,9 @@ define(
                     for (var child in endStep.getChildren()) {
                         this.stage.addChild(endStep.getChildren()[child]);
                     }
-                    
+
+                    this.steps.push(endStep);
+
                     return endStep;
                 }
 

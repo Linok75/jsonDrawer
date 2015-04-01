@@ -2,11 +2,23 @@ html, body
 {
     padding : 0;
     margin : 0;
-    //overflow: hidden;
+    overflow: hidden;
 }
 
-.CodeMirror
-{
+/*#canvasContainer {
+    width : 800px;
+    height : 600px;
+    margin : auto;
+    border : 1px solid black;
+}*/
+
+#canvasViewer {
+    height : 100%;
+    width : 60%;
+    overflow: scroll;
+}
+
+.CodeMirror {
     height : 100%;
     width : 40%;
     float : left;

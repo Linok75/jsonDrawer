@@ -103,7 +103,6 @@ require(
             var resize = function() {
                 $("#canvasContainer").width($(window).width());
                 $("#canvasContainer").height($(window).height());
-                mapper.resize();
             };
 
 
