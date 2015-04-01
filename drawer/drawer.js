@@ -7,7 +7,8 @@ requirejs.config(
             paths: {
                 'step': 'drawer/step',
                 'path': 'drawer/path',
-                'infos': 'drawer/infos'
+                'infos': 'drawer/infos',
+                'endstep': 'drawer/endStep'
             }
         }
 );
@@ -17,9 +18,10 @@ define(
             'jquery-private',
             'step',
             'path',
-            'infos'
+            'infos',
+            'endstep'
         ],
-        function ($, Step, Path, Infos)
+        function ($, Step, Path, Infos, EndStep)
         {
             function Drawer(stage)
             {
@@ -39,18 +41,18 @@ define(
                     self.tick(event);
                 });
             }
-            
-            Drawer.prototype.clear = function() {
+
+            Drawer.prototype.clear = function () {
                 this.stage.removeAllChildren();
                 this.steps = new Array();
                 this.paths = new Array();
                 this.nextOrigin = new createjs.Point(this.stage.canvas.width / 2, this.defaultMinYOrigin);
-                
+
                 this.setBackground();
             };
 
             Drawer.prototype.resize = function () {
-                this.stage.canvas.width = $("#canvasContainer").width()*0.6;
+                this.stage.canvas.width = $("#canvasContainer").width() * 0.6;
                 this.stage.canvas.height = $("#canvasContainer").height();
                 this.stage.removeChild(this.background);
                 this.setBackground();
@@ -104,7 +106,7 @@ define(
                         this.stage.canvas.width * 0.75,
                         this.stage.canvas.height * 0.75
                         );
-                
+
                 var path = new Path(
                         key,
                         this.getStep(path.options.source),
@@ -143,7 +145,17 @@ define(
             Drawer.prototype.getStep = function (name)
             {
                 if (typeof (this.steps[name]) === 'undefined') {
-                    throw Error("Require step " + name + " is undefined.");
+                    var endStep = new EndStep(this.nextOrigin);
+
+                    //update the position for the next step
+                    this.nextOrigin.y = this.nextOrigin.y + endStep.getOuterBounds().height + endStep.getMargin();
+
+                    //Add all step's elements we need to draw on canvas
+                    for (var child in endStep.getChildren()) {
+                        this.stage.addChild(endStep.getChildren()[child]);
+                    }
+                    
+                    return endStep;
                 }
 
                 return this.steps[name];

@@ -179,7 +179,7 @@ define(
         {
             var point = new createjs.Point(
                 this.getOuterBounds().x + this.getOuterBounds().width / (this.inPaths.length + 1),
-                this.getOuterBounds().y
+                this.getOuterBounds().y - this.STROKE_STYLE
                 )
                 ;
             for (var path in this.inPaths) {

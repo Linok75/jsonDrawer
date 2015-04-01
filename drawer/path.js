@@ -17,6 +17,7 @@ define(
             this.INFOS_BUTTON_SCALE = 0.035;
 
             this.name = new createjs.Text(name, this.FONT_SIZE + " " + this.FONT_STYLE, this.FONT_COLOR);
+            this.name.textAlign = "center";
             this.arrowShape = new createjs.Shape();
             this.boxShape = new createjs.Shape();
             this.source = source;
@@ -46,7 +47,7 @@ define(
                 this.getInnerBounds().height + this.PADDING * 2
                 );
 
-            this.name.x = this.box.x + this.PADDING;
+            this.name.x = this.startPoint.x;
             this.name.y = this.box.y + this.PADDING;
         };
 
