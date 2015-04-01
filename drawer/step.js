@@ -1,5 +1,7 @@
 'use strict';
 
+var infosVisible = false;
+
 define(
         [
         ],
@@ -91,9 +93,11 @@ define(
                 }).bind(self);
                 this.shape.on("mouseover", function (e)
                 {
-                    self.refreshInfosButton();
-                    e.target.stage.addChild(self.infosButton);
-                    changed = true;
+                    if (!infosVisible) {
+                        self.refreshInfosButton();
+                        e.target.stage.addChild(self.infosButton);
+                        changed = true;
+                    }
                 }).bind(self);
                 this.shape.on("mouseout", function (e)
                 {
@@ -106,6 +110,8 @@ define(
                     for (var child in self.infos.getChildren()) {
                         e.target.stage.addChild(self.infos.getChildren()[child]);
                     }
+                    e.target.stage.removeChild(self.infosButton);
+                    infosVisible = true;
                     changed = true;
                 }).bind(self);
             };
@@ -114,7 +120,7 @@ define(
                 var self = this;
                 var img = new Image();
                 img.src = "images/info_icon.svg";
-                
+
                 img.onload = (function () {
                     this.infosButton.image = img;
                     this.infosButton.scaleX = this.INFOS_BUTTON_SCALE;
@@ -184,4 +190,4 @@ define(
             };
             return Step;
         }
-        );
+);

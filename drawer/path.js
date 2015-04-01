@@ -100,9 +100,11 @@ define(
 
                 this.boxShape.on("mouseover", function (e)
                 {
-                    self.refreshInfosButton();
-                    e.target.stage.addChild(self.infosButton);
-                    changed = true;
+                    if (!infosVisible) {
+                        self.refreshInfosButton();
+                        e.target.stage.addChild(self.infosButton);
+                        changed = true;
+                    }
                 }).bind(self);
 
                 this.boxShape.on("mouseout", function (e)
@@ -117,7 +119,9 @@ define(
                     for (var child in self.infos.getChildren()) {
                         e.target.stage.addChild(self.infos.getChildren()[child]);
                     }
+                    e.target.stage.removeChild(self.infosButton);
                     changed = true;
+                    infosVisible = true;
                 }).bind(self);
             };
 

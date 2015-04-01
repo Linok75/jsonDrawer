@@ -38,6 +38,7 @@ define(
                     for (var child in self.getChildren()) {
                         e.target.stage.removeChild(self.getChildren()[child]);
                     }
+                    infosVisible = false;
                     changed = true;
                 }).bind(self);
             };
