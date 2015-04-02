@@ -121,9 +121,7 @@ define(
                 this.nextOrigin.y = this.nextOrigin.y + step.getOuterBounds().height + step.getMargin();
 
                 //Add all step's elements we need to draw on canvas
-                for (var child in step.getChildren()) {
-                    this.stage.addChild(step.getChildren()[child]);
-                }
+                    this.stage.addChild(step.getChildren());
 
                 changed = true;
                 this.steps[step.getName()] = step;
