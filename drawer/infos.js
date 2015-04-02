@@ -25,10 +25,11 @@ define(
                 this.infosString = "";
                 this.addObjInfos(obj, 0);
 
+                this.box = new createjs.Container();
+
                 this.crossBitmap = new createjs.Bitmap();
                 this.boxShape = new createjs.Shape();
                 this.infosDisplay = new createjs.Text(this.infosString, this.FONT_SIZE + " " + this.FONT_STYLE, this.FONT_COLOR);
-                this.maskBox = maskBox;
                 this.mask = new createjs.Shape();
 
                 //Arrow button to scroll text
@@ -37,16 +38,31 @@ define(
                 this.rightButton = new createjs.Shape();
                 this.botButton = new createjs.Shape();
 
-                this.initChildren();
+                this.initChildren(maskBox);
                 this.addEventListener();
             }
-
-            Infos.prototype.initChildren = function () {
+            
+            Infos.prototype.initChildren = function (maskBox) {
+                this.initBox(maskBox);
+                
                 this.initMask();
                 this.initArrowButtons();
-                this.initBox();
                 this.initBoxShape();
                 this.initCrossBitmap();
+            };
+
+            Infos.prototype.initBox = function (maskBox) {
+                this.box.x = maskBox.x - this.PADDING;
+                this.box.y = maskBox.y - this.PADDING;
+
+                this.box.setBounds(
+                        this.box.x,
+                        this.box.y,
+                        maskBox.width + this.PADDING * 2,
+                        maskBox.height + this.PADDING * 2
+                        );
+                
+                this.box.addChild(this.boxShape, this.infosDisplay, this.crossBitmap, this.leftButton, this.topButton, this.rightButton, this.botButton);
             };
 
             Infos.prototype.initArrowButtons = function () {
@@ -57,6 +73,7 @@ define(
                 var padding = 10;
                 var size = 25;
                 var radius = 5;
+                var innerBounds = this.getInnerBounds();
 
                 graphics.beginFill(rectFill);
                 graphics.drawRoundRect(0, 0, size + padding * 2, size + padding * 2, radius);
@@ -74,37 +91,37 @@ define(
                 this.botButton.graphics = graphics;
 
                 /********LEFT BUTTON********/
-                this.leftButton.x = this.maskBox.x + this.maskBox.width - (size + padding * 2) * 2;
-                this.leftButton.y = this.maskBox.y + this.maskBox.height - (size + padding * 2);
+                this.leftButton.x = innerBounds.x + innerBounds.width - (size + padding * 2) * 2;
+                this.leftButton.y = innerBounds.y + innerBounds.height - (size + padding * 2);
                 this.leftButton.rotation = 180;
                 this.leftButton.alpha = this.BUTTON_ALPHA;
-                if (this.infosDisplay.x >= this.maskBox.x) {
+                if (this.infosDisplay.x >= innerBounds.x) {
                     this.leftButton.visible = false;
                 }
 
                 /********TOP BUTTON********/
-                this.topButton.x = this.maskBox.x + this.maskBox.width - (size + padding * 2) * 2;
-                this.topButton.y = this.maskBox.y + this.maskBox.height - (size + padding * 2) * 2;
+                this.topButton.x = innerBounds.x + innerBounds.width - (size + padding * 2) * 2;
+                this.topButton.y = innerBounds.y + innerBounds.height - (size + padding * 2) * 2;
                 this.topButton.rotation = 270;
                 this.topButton.alpha = this.BUTTON_ALPHA;
-                if (this.infosDisplay.y >= this.maskBox.y) {
+                if (this.infosDisplay.y >= innerBounds.y) {
                     this.topButton.visible = false;
                 }
 
                 /********RIGHT BUTTON********/
-                this.rightButton.x = this.maskBox.x + this.maskBox.width - (size + padding * 2);
-                this.rightButton.y = this.maskBox.y + this.maskBox.height - (size + padding * 2) * 2;
+                this.rightButton.x = innerBounds.x + innerBounds.width - (size + padding * 2);
+                this.rightButton.y = innerBounds.y + innerBounds.height - (size + padding * 2) * 2;
                 this.rightButton.alpha = this.BUTTON_ALPHA;
-                if (this.infosDisplay.x + this.infosDisplay.getBounds().width <= this.maskBox.x + this.maskBox.width) {
+                if (this.infosDisplay.x + this.infosDisplay.getBounds().width <= innerBounds.x + innerBounds.width) {
                     this.rightButton.visible = false;
                 }
 
                 /********BOT BUTTON********/
-                this.botButton.x = this.maskBox.x + this.maskBox.width - (size + padding * 2);
-                this.botButton.y = this.maskBox.y + this.maskBox.height - (size + padding * 2);
+                this.botButton.x = innerBounds.x + innerBounds.width - (size + padding * 2);
+                this.botButton.y = innerBounds.y + innerBounds.height - (size + padding * 2);
                 this.botButton.rotation = 90;
                 this.botButton.alpha = this.BUTTON_ALPHA;
-                if (this.infosDisplay.y + this.infosDisplay.getBounds().height <= this.maskBox.y + this.maskBox.height) {
+                if (this.infosDisplay.y + this.infosDisplay.getBounds().height <= innerBounds.y + innerBounds.height) {
                     this.botButton.visible = false;
                 }
 
@@ -115,35 +132,33 @@ define(
              */
             Infos.prototype.initMask = function () {
                 var graphics = new createjs.Graphics();
+                var innerBounds = this.getInnerBounds();
 
-                graphics.drawRect(0, 0, this.maskBox.width, this.maskBox.height);
+                graphics.drawRect(0, 0, innerBounds.width, innerBounds.height);
 
                 this.mask.graphics = graphics;
-                this.mask.x = this.maskBox.x;
-                this.mask.y = this.maskBox.y;
+                this.mask.x = innerBounds.x;
+                this.mask.y = innerBounds.y;
 
                 this.infosDisplay.mask = this.mask;
 
-                this.infosDisplay.x = this.maskBox.x;
-                this.infosDisplay.y = this.maskBox.y;
+                this.infosDisplay.x = innerBounds.x;
+                this.infosDisplay.y = innerBounds.y;
             };
 
             Infos.prototype.addEventListener = function ()
             {
                 var self = this;
+                var innerBounds = this.getInnerBounds();
 
                 this.crossBitmap.on("click", function (e) {
-                    var stage = e.target.stage;
-                    for (var child in self.getChildren()) {
-                        stage.removeChild(self.getChildren()[child]);
-                    }
+                    e.target.stage.removeChild(self.box);
                     infosVisible = false;
                     changed = true;
                 }).bind(self);
 
-                /*
-                 * Text scrolling
-                 */
+                
+                /**************START TICK EVENT**************/
                 this.infosDisplay.on("tick", function (e) {
                     if (self.scroll) {
                         self.infosDisplay.x += self.xScrollSpeed;
@@ -152,7 +167,7 @@ define(
                     }
 
                     /************LEFT ARROW VISIBILTY***********/
-                    if (self.infosDisplay.x >= self.maskBox.x) {
+                    if (self.infosDisplay.x >= innerBounds.x) {
                         if (self.leftButton.visible) {
                             self.leftButton.visible = false;
                             self.scroll = false;
@@ -162,7 +177,7 @@ define(
                     }
 
                     /************TOP ARROW VISIBILTY***********/
-                    if (self.infosDisplay.y >= self.maskBox.y) {
+                    if (self.infosDisplay.y >= innerBounds.y) {
                         if (self.topButton.visible) {
                             self.topButton.visible = false;
                             self.scroll = false;
@@ -172,7 +187,7 @@ define(
                     }
 
                     /************RIGHT ARROW VISIBILTY***********/
-                    if (self.infosDisplay.x + self.infosDisplay.getBounds().width <= self.maskBox.x + self.maskBox.width) {
+                    if (self.infosDisplay.x + self.infosDisplay.getBounds().width <= innerBounds.x + innerBounds.width) {
                         if (self.rightButton.visible) {
                             self.rightButton.visible = false;
                             self.scroll = false;
@@ -182,7 +197,7 @@ define(
                     }
 
                     /************BOT ARROW VISIBILTY***********/
-                    if (self.infosDisplay.y + self.infosDisplay.getBounds().height <= self.maskBox.y + self.maskBox.height) {
+                    if (self.infosDisplay.y + self.infosDisplay.getBounds().height <= innerBounds.y + innerBounds.height) {
                         if (self.botButton.visible) {
                             self.botButton.visible = false;
                             self.scroll = false;
@@ -191,6 +206,8 @@ define(
                         self.botButton.visible = true;
                     }
                 }).bind(self);
+                /****************END TICK EVENT****************/
+
 
                 /***************** LEFT ARROW BUTTON EVENT ***************/
                 this.leftButton.on("mouseover", function (e) {
@@ -284,6 +301,8 @@ define(
             Infos.prototype.initCrossBitmap = function () {
                 var self = this;
                 var img = new Image();
+                var outerBounds = this.box.getBounds();
+                
                 img.src = "images/close_icon.svg";
                 img.onload = (function () {
                     self.crossBitmap.image = img;
@@ -292,8 +311,8 @@ define(
 
                     var oldBounds = self.crossBitmap.getBounds();
 
-                    self.crossBitmap.x = self.box.x + self.box.width - self.PADDING - oldBounds.width * self.CLOSER_SCALE;
-                    self.crossBitmap.y = self.box.y + self.PADDING;
+                    self.crossBitmap.x = outerBounds.width - self.PADDING - oldBounds.width * self.CLOSER_SCALE;
+                    self.crossBitmap.y = self.PADDING;
 
                     self.crossBitmap.setBounds(
                             self.crossBitmap.x,
@@ -303,38 +322,30 @@ define(
                             );
                 }).bind(self);
             };
-
-            Infos.prototype.initBox = function () {
-                this.box = new createjs.Rectangle(
-                        this.maskBox.x - this.PADDING,
-                        this.maskBox.y - this.PADDING,
-                        this.maskBox.width + this.PADDING * 2,
-                        this.maskBox.height + this.PADDING * 2
-                        );
-            };
-
+            
             Infos.prototype.initBoxShape = function () {
                 var graphics = new createjs.Graphics();
+                var outerBounds = this.box.getBounds();
 
                 graphics.setStrokeStyle(this.STROKE_STYLE);
                 graphics.beginStroke(this.STROKE_COLOR);
                 graphics.beginFill(this.FILL_COLOR);
 
-                graphics.drawRoundRect(0, 0, this.box.width, this.box.height, this.RADIUS);
+                graphics.drawRoundRect(0, 0, outerBounds.width, outerBounds.height, this.RADIUS);
 
                 this.boxShape.graphics = graphics;
-                this.boxShape.x = this.box.x;
-                this.boxShape.y = this.box.y;
+                this.boxShape.x = 0;
+                this.boxShape.y = 0;
             };
 
             Infos.prototype.getChildren = function () {
-                var children = [this.boxShape, this.infosDisplay, this.crossBitmap, this.leftButton, this.topButton, this.rightButton, this.botButton];
-
-                return children;
+                return this.box;
             };
 
             Infos.prototype.getInnerBounds = function () {
-                return this.infosDisplay.getBounds();
+                var outer = this.box.getBounds();
+                
+                return new createjs.Rectangle(this.PADDING, this.PADDING, outer.width - this.PADDING*2, outer.height - this.PADDING*2);
             };
 
             Infos.prototype.addObjInfos = function (obj, indentLevel) {
