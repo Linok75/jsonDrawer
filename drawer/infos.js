@@ -73,20 +73,24 @@ define(
             this.rightButton.graphics = graphics;
             this.botButton.graphics = graphics;
 
+            /********LEFT BUTTON********/
             this.leftButton.x = this.maskBox.x + this.maskBox.width - (size + padding * 2) * 2;
             this.leftButton.y = this.maskBox.y + this.maskBox.height - (size + padding * 2);
             this.leftButton.rotation = 180;
             this.leftButton.alpha = this.BUTTON_ALPHA;
 
+            /********TOP BUTTON********/
             this.topButton.x = this.maskBox.x + this.maskBox.width - (size + padding * 2) * 2;
             this.topButton.y = this.maskBox.y + this.maskBox.height - (size + padding * 2) * 2;
             this.topButton.rotation = 270;
             this.topButton.alpha = this.BUTTON_ALPHA;
 
+            /********RIGHT BUTTON********/
             this.rightButton.x = this.maskBox.x + this.maskBox.width - (size + padding * 2);
             this.rightButton.y = this.maskBox.y + this.maskBox.height - (size + padding * 2) * 2;
             this.rightButton.alpha = this.BUTTON_ALPHA;
 
+            /********BOT BUTTON********/
             this.botButton.x = this.maskBox.x + this.maskBox.width - (size + padding * 2);
             this.botButton.y = this.maskBox.y + this.maskBox.height - (size + padding * 2);
             this.botButton.rotation = 90;
@@ -94,6 +98,9 @@ define(
 
         };
 
+        /*
+         * Mask used to hide text overflow
+         */
         Infos.prototype.initMask = function() {
             var graphics = new createjs.Graphics();
 
@@ -122,6 +129,9 @@ define(
                 changed = true;
             }).bind(self);
 
+            /*
+             * Text scrolling
+             */
             this.infosDisplay.on("tick", function(e) {
                 if (self.scroll) {
                     self.infosDisplay.x += self.xScrollSpeed;

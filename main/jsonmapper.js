@@ -11,18 +11,25 @@ define(
         'easeljs'
     ],
     function(Drawer) {
-        function Jsonmapper(json)
+        function Jsonmapper()
         {
-            this.json = json;
-            this.name = this.json.name;
             this.drawer = new Drawer(new createjs.Stage("drawingboard"));
+        }
+        ;
 
+        Jsonmapper.prototype.setJson = function(json) {
+            this.drawer.clear();
+            this.json = json;
             this.parse();
         };
 
         Jsonmapper.prototype.parse = function()
         {
             var step, path;
+
+            if (typeof (this.json.name) !== "undefined") {
+                this.name = this.json.name;
+            }
 
             for (step in this.json.steps) {
                 this.drawStep(step, this.json.steps[step]);
@@ -43,6 +50,10 @@ define(
             this.drawer.addPath(key, path);
         };
         
+        Jsonmapper.prototype.resize = function() {
+            this.drawer.resize();
+        };
+
         return Jsonmapper;
     }
 );

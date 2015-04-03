@@ -89,7 +89,7 @@ define(
 
         Path.prototype.getChildren = function()
         {
-            var children = [this.boxShape, this.arrowShape, this.name];
+            var children = [this.boxShape, this.arrowShape, this.name, this.infosButton];
 
             return children;
         };
@@ -131,17 +131,18 @@ define(
             img.src = "images/info_icon.svg";
 
             img.onload = (function() {
-                this.infosButton.image = img;
-                this.infosButton.scaleX = this.INFOS_BUTTON_SCALE;
-                this.infosButton.scaleY = this.INFOS_BUTTON_SCALE;
+                self.infosButton.image = img;
+                self.infosButton.scaleX = self.INFOS_BUTTON_SCALE;
+                self.infosButton.scaleY = self.INFOS_BUTTON_SCALE;
 
                 var oldBounds = this.infosButton.getBounds();
-                this.infosButton.setBounds(
+                self.infosButton.setBounds(
                     oldBounds.x,
                     oldBounds.y,
-                    oldBounds.width * this.INFOS_BUTTON_SCALE,
-                    oldBounds.height * this.INFOS_BUTTON_SCALE
+                    oldBounds.width * self.INFOS_BUTTON_SCALE,
+                    oldBounds.height * self.INFOS_BUTTON_SCALE
                     );
+                self.infosButton.visible = false;
             }).bind(self);
         };
 

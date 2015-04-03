@@ -7,7 +7,7 @@ define(
     ],
     function()
     {
-        function Step(origin, name, infos)
+        function Step(origin, name, type, infos)
         {
             this.STROKE_STYLE = 2;
             this.STROKE_COLOR = createjs.Graphics.getRGB(4, 97, 201);
@@ -19,11 +19,13 @@ define(
             this.MARGIN = 80;
             this.RADIUS = 5; //Round rect radius
             this.INFOS_BUTTON_SCALE = 0.035;
+
             this.infos = infos;
             this.inPaths = new Array();
             this.outPaths = new Array();
             this.shape = new createjs.Shape();
             this.name = new createjs.Text(name, this.FONT_SIZE + " " + this.FONT_STYLE, this.FONT_COLOR);
+            this.type = new createjs.Text("<" + type + ">", this.FONT_SIZE * 0.75 + " " + this.FONT_STYLE, this.FONT_COLOR);
             this.infosButton = new createjs.Bitmap();
             this.setBox(origin);
             this.initInfosButton();
@@ -38,8 +40,11 @@ define(
                 this.getInnerBounds().width + this.PADDING * 2,
                 this.getInnerBounds().height + this.PADDING * 2
                 );
-            this.name.x = this.box.x + this.PADDING;
+            this.name.x = origin.x - this.name.getBounds().width / 2;
             this.name.y = this.box.y + this.PADDING;
+
+            this.type.x = origin.x - this.type.getBounds().width / 2;
+            this.type.y = this.name.y + this.name.getBounds().height + this.PADDING;
             this.initBoxShape();
         };
         Step.prototype.getName = function()
@@ -50,7 +55,7 @@ define(
         Step.prototype.getChildren = function()
         {
             this.initBoxShape();
-            var children = [this.shape, this.name];
+            var children = [this.shape, this.name, this.type, this.infosButton];
             return children;
         };
 //Return the box rectangle
@@ -61,7 +66,21 @@ define(
 //Return the content bounds (without box)
         Step.prototype.getInnerBounds = function()
         {
-            return this.name.getBounds();
+            var bounds;
+            var width;
+
+            if (this.name.getBounds().width > this.type.getBounds().width) {
+                width = this.name.getBounds().width;
+            } else {
+                width = this.type.getBounds().width;
+            }
+
+            if (typeof (this.box) === "undefined") {
+                bounds = new createjs.Rectangle(0, 0, width, this.name.getBounds().height + this.type.getBounds().height + this.PADDING);
+            } else {
+                bounds = new createjs.Rectangle(this.box.x + this.PADDING, this.box.y + this.PADDING, width, this.name.getBounds().height + this.type.getBounds().height + this.PADDING);
+            }
+            return bounds;
         };
 //Return the box margin
         Step.prototype.getMargin = function()
@@ -114,6 +133,7 @@ define(
                 changed = true;
             }).bind(self);
         };
+
         Step.prototype.initInfosButton = function()
         {
             var self = this;
@@ -121,18 +141,20 @@ define(
             img.src = "images/info_icon.svg";
 
             img.onload = (function() {
-                this.infosButton.image = img;
-                this.infosButton.scaleX = this.INFOS_BUTTON_SCALE;
-                this.infosButton.scaleY = this.INFOS_BUTTON_SCALE;
-                var oldBounds = this.infosButton.getBounds();
-                this.infosButton.setBounds(
+                self.infosButton.image = img;
+                self.infosButton.scaleX = self.INFOS_BUTTON_SCALE;
+                self.infosButton.scaleY = self.INFOS_BUTTON_SCALE;
+                var oldBounds = self.infosButton.getBounds();
+                self.infosButton.setBounds(
                     oldBounds.x,
                     oldBounds.y,
                     oldBounds.width * this.INFOS_BUTTON_SCALE,
                     oldBounds.height * this.INFOS_BUTTON_SCALE
                     );
+                self.infosButton.visible = false;
             }).bind(self);
         };
+
         Step.prototype.refreshInfosButton = function()
         {
             var oldBounds = this.infosButton.getBounds();

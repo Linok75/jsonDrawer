@@ -26,7 +26,6 @@ define(
                 this.defaultMinYOrigin = 50;
                 this.stage = stage;
                 this.background = new createjs.Shape();
-                this.resize();
 
                 this.stage.enableMouseOver(10);
                 this.stage.mouseMoveOutside = true;
@@ -36,18 +35,23 @@ define(
                 this.paths = new Array();
 
                 var self = this;
-                $(window).resize(function () {
-                    self.resize();
-                });
-
                 createjs.Ticker.addEventListener("tick", function (event) {
                     self.tick(event);
                 });
             }
+            
+            Drawer.prototype.clear = function() {
+                this.stage.removeAllChildren();
+                this.steps = new Array();
+                this.paths = new Array();
+                this.nextOrigin = new createjs.Point(this.stage.canvas.width / 2, this.defaultMinYOrigin);
+                
+                this.setBackground();
+            };
 
             Drawer.prototype.resize = function () {
-                this.stage.canvas.width = $(window).width();
-                this.stage.canvas.height = $(window).height();
+                this.stage.canvas.width = $("#canvasContainer").width()*0.6;
+                this.stage.canvas.height = $("#canvasContainer").height();
                 this.stage.removeChild(this.background);
                 this.setBackground();
             };
@@ -72,6 +76,7 @@ define(
                 var step = new Step(
                         this.nextOrigin,
                         key,
+                        step.type,
                         new Infos(
                                 step,
                                 maskBox
