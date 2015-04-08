@@ -102,8 +102,8 @@ require(
                 }
 
                 var resize = function () {
-                $("#canvasContainer").width($(window).width());
-                $("#canvasContainer").height($(window).height());
+                    $("#canvasContainer").width($(window).width());
+                    $("#canvasContainer").height($(window).height());
                 };
 
 
@@ -117,6 +117,7 @@ require(
                 $('#resizer').draggable({
                     stop: function (t, e) {
                         jsonEditor.refresh();
+                        preview();
                     },
                     drag: function (t, e) {
                         'resizer' === $('.CodeMirror').width((e.offset.left - $('#canvasContainer').offset().left) + 'px');

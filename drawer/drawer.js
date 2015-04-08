@@ -49,7 +49,10 @@ define(
                 this.stage.removeAllChildren();
                 this.steps = new Array();
                 this.paths = new Array();
+                this.resize();
                 this.nextOrigin = new createjs.Point(this.stage.canvas.width / 2, this.defaultMinYOrigin);
+
+                infosVisible = false;
 
                 this.setBackground();
             };
