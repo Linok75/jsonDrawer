@@ -5,7 +5,7 @@ requirejs.config(
             paths: {
                 'jquery': 'lib/jquery',
                 'data': 'main/jsonexample',
-                'mapper': 'main/jsonmapper'
+                'drawer': 'drawer/drawer'
 
             }
         }
@@ -20,7 +20,7 @@ require(
         [
             'jquery-private',
             'data',
-            'mapper',
+            'drawer',
             'codemirror/lib/codemirror',
             'codemirror/mode/javascript/javascript',
             'codemirror/addon/hint/show-hint',
@@ -40,7 +40,7 @@ require(
             'codemirror/keymap/sublime',
             'lib/jquery-ui.min'
         ],
-        function ($, json, Jsonmapper, CodeMirror)
+        function ($, json, Drawer, CodeMirror)
         {
             $(document).ready(function ()
             {
@@ -80,45 +80,50 @@ require(
                 //Set the preview IFrame content
                 function preview()
                 {
-                    if (allowUpdate) {
-                        allowUpdate = false;
-                        var json = jsonEditor.doc.getValue();
+//                    if (allowUpdate) {
+//                        allowUpdate = false;
+//                        var json = jsonEditor.doc.getValue();
+//
+//                        try {
+//                            json = json.replace(/\\'/g, '\'');
+//                            drawer.setData(JSON.parse(json));
+//                        } catch (e) {
+//                            if (json === "") {
+//                                drawer.setData({});
+//                            } else {
+//                                console.log(e);
+//                            }
+//                        }
+//
+//                        setTimeout(function () {
+//                            allowUpdate = true;
+//                        }, 500);
+//                    }
 
-                        try {
-                            json = json.replace(/\\'/g, '\'');
-                            mapper.setJson(JSON.parse(json));
-                        } catch (e) {
-                            if (json === "") {
-                                mapper.setJson({});
-                            } else {
-                                console.log(e);
-                            }
-                        }
-
-                        setTimeout(function () {
-                            allowUpdate = true;
-                        }, 500);
-                    }
+                    drawer.setData(json);
                 }
 
                 var resize = function () {
                     $("#container").width($(window).width());
                     $("#container").height($(window).height());
-                    mapper.resize();
+                    drawer.resize();
                 };
 
 
-                var mapper = new Jsonmapper(json);
+                var drawer = new Drawer();
                 resize();
                 preview();
 
-                jsonEditor.on("change", preview);
+//                jsonEditor.on("change", preview);
+
+                jsonEditor.doc.setValue(JSON.stringify(json).replace(/{/g,'{\n').replace(/,/g,',\n'));
+
                 $(window).resize(resize);
 
                 $('#resizer').draggable({
                     stop: function (t, e) {
                         jsonEditor.refresh();
-                        mapper.resize();
+                        drawer.resize();
                     },
                     drag: function (t, e) {
                         'resizer' === $('.CodeMirror').width((e.offset.left - $('#container').offset().left) + 'px');
