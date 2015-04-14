@@ -106,12 +106,10 @@ require(
                 var resize = function () {
                     $("#container").width($(window).width());
                     $("#container").height($(window).height());
-                    drawer.resize();
                 };
-
-
-                var drawer = new Drawer();
+                
                 resize();
+                var drawer = new Drawer();
                 preview();
 
 //                jsonEditor.on("change", preview);
@@ -123,7 +121,6 @@ require(
                 $('#resizer').draggable({
                     stop: function (t, e) {
                         jsonEditor.refresh();
-                        drawer.resize();
                     },
                     drag: function (t, e) {
                         'resizer' === $('.CodeMirror').width((e.offset.left - $('#container').offset().left) + 'px');
