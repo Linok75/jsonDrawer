@@ -5,20 +5,19 @@ define(
         'jquery-private'
     ],
     function($) {
-        function Step(key, step) {
+        function Path(path) {
             this.PADDING = 20;
             this.FONT_FAMILY = 'Arial';
             
-            this.key = key;
-            this.step = step;
+            this.key = path.options.next_options.label;
+            this.path = path;
             
             this.initSize();
         }
         
-        Step.prototype.initSize = function() {
+        Path.prototype.initSize = function() {
             var struct = $('<div></div>');
             var pKey = $('<p></p>').text(this.key);
-            var pType = $('<p></p>').text(this.step.type);
             
             struct.css('margin', 0);
             struct.css('padding', this.PADDING + 'px');
@@ -27,14 +26,9 @@ define(
             struct.css('text-align', 'center');
             
             pKey.css('margin', 0);
-            pKey.css('margin-bottom', this.PADDING + 'px');
-            pKey.css('font-size', '20px');
-            pKey.css('font-weight', 'bold');
+            pKey.css('font-size', '15px');
             
-            pType.css('font-size', '17px');
-            pType.css('margin', 0)
-            
-            struct.append(pKey,pType);
+            struct.append(pKey);
             struct.appendTo('body');
             
             this.size = {
@@ -45,21 +39,17 @@ define(
             struct.remove();
         };
         
-        Step.prototype.getKey = function() {
+        Path.prototype.getKey = function() {
             return this.key;
         };
         
-        Step.prototype.getType = function() {
-            return this.step.type;
-        };
-        
-        Step.prototype.getPadding = function() {
+        Path.prototype.getPadding = function() {
             return this.PADDING;
         };
         
-        Step.prototype.getSize = function() {
+        Path.prototype.getSize = function() {
             return this.size;
         };
         
-        return Step;
+        return Path;
     });
