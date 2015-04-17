@@ -27,19 +27,20 @@ define(
             this.STROKE_COLOR = d3.rgb(4, 97, 201);
             this.ARROW_SIZE = 10;
             this.MARGIN = 100;
-
+            this.maxInfosSize = {
+                'width': this.DEFAULT_SIZE * 0.75,
+                'height': this.DEFAULT_SIZE * 0.75
+            };
             this.viewbox = {
                 'x': 0,
                 'y': 0,
                 'width': this.DEFAULT_SIZE,
                 'height': this.DEFAULT_SIZE
             };
-
             this.nextPosition = {
                 'x': this.viewbox.width / 2,
                 'y': 25
             };
-
             this.svg = d3.select('#svgBox')
                 .append('svg:svg')
                 .attr('id', 'drawingboard')
@@ -49,17 +50,28 @@ define(
                 .attr('preserveAspectRatio', 'xMidYMid meet')
                 .attr('xmlns', 'http://www.w3.org/2000/svg')
                 .style('background-color', d3.rgb(183, 196, 189));
-
+            this.svg.append('svg:defs')
+                .append('svg:clipPath')
+                .attr('id', 'infos_clip')
+                .style('overflow', 'scroll')
+                .append('svg:rect')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('width', this.viewbox.width * 0.75)
+                .attr('height', this.viewbox.height * 0.75);
             this.steps = this.svg
                 .append('svg:g')
                 .attr('id', 'steps');
-
             this.paths = this.svg
                 .append('svg:g')
                 .attr('id', 'paths');
-
+            this.infos = this.svg
+                .append('svg:g')
+                .attr('id', 'infos');
+            
+            this.initInfosContent();
+            
             this.data = {};
-
             this.dragListener = d3.behavior.drag()
                 .on('drag', (function(d) {
                     this.drag(d);
@@ -68,14 +80,11 @@ define(
 
         Drawer.prototype.drag = function(d) {
             var point = d3.mouse(this.svg[0][0]);
-
             d.x = point[0];
             d.y = point[1];
-
             this.translateSteps();
             this.refreshPaths();
         };
-
         Drawer.prototype.getStep = function(key, output) {
             for (var i = 0; i < this.data.steps.length; i++) {
                 if (this.data.steps[i].step.getKey() === key) {
@@ -89,16 +98,12 @@ define(
                 }
             }
         };
-
         Drawer.prototype.setData = function(data) {
             var steps = [];
             var paths = [];
-
             for (var step in data.steps) {
                 var newStep = new Step(step, data.steps[step]);
-
                 this.nextPosition.y += newStep.getSize().height;
-
                 steps.push({
                     'x': this.nextPosition.x,
                     'y': this.nextPosition.y,
@@ -106,12 +111,10 @@ define(
                     'input': 0,
                     'step': newStep
                 });
-
                 this.nextPosition.y += newStep.getSize().height / 2 + this.MARGIN;
             }
 
             this.data.steps = steps;
-
             for (var path in data.paths) {
                 paths.push({
                     'source': this.getStep(data.paths[path].options.source, true),
@@ -121,18 +124,14 @@ define(
             }
 
             this.data.paths = paths;
-
 //                this.createLayout();
             this.draw();
         };
-
         Drawer.prototype.draw = function() {
             this.drawSteps();
             this.drawPaths();
-
 //            this.layout.start();
         };
-
         Drawer.prototype.drawPaths = function() {
             this.paths = this.paths
                 .selectAll('g')
@@ -142,22 +141,19 @@ define(
                 .attr(
                     'id',
                     function(d) {
-                        return 'group_' + d.path.getKey();
+                        return 'group_' + d.path.getKey().replace(' ', '_') + '_' + d.source.step.getKey() + '_' + d.target.step.getKey();
                     }
                 );
-
             this.paths.append('svg:path')
                 .attr('class', 'link')
                 .style('stroke', this.STROKE_COLOR)
                 .style('stroke-width', 2)
                 .style('fill', 'transparent');
-
             this.paths.append('svg:path')
                 .attr('class', 'arrow')
                 .style('stroke', this.STROKE_COLOR)
                 .style('stroke-width', 2)
                 .style('fill', this.STROKE_COLOR);
-
             this.paths.append('svg:g')
                 .attr('class', 'box')
                 .append('svg:circle')
@@ -165,41 +161,170 @@ define(
                 .style('stroke', this.STROKE_COLOR)
                 .style('stroke-width', 2)
                 .style('fill', d3.rgb(255, 255, 255));
-
+            this.paths.select('.box')
+                .on(
+                    'mouseover',
+                    (function(d) {
+                        this.svg.select('#group_' + d.path.getKey().replace(' ', '_') + '_' + d.source.step.getKey() + '_' + d.target.step.getKey())
+                            .select('image')
+                            .style('opacity', 1);
+                    }).bind(this)
+                    )
+                .on(
+                    'mouseout',
+                    (function(d) {
+                        this.svg.select('#group_' + d.path.getKey().replace(' ', '_') + '_' + d.source.step.getKey() + '_' + d.target.step.getKey())
+                            .select('image')
+                            .style('opacity', 0);
+                    }).bind(this)
+                    );
             this.paths.select('.box')
                 .append('svg:image')
-                .attr('x', -15)
-                .attr('y', -15)
-                .attr('width', 30)
-                .attr('height', 30)
-                .attr('xlink:href', 'images/info_icon.svg');
-
+                .attr('x', -12.5)
+                .attr('y', -12.5)
+                .attr('width', 25)
+                .attr('height', 25)
+                .attr('xlink:href', 'images/info_icon.svg')
+                .style('opacity', 0)
+                .on(
+                    'click',
+                    (function(d) {
+                        this.setInfosContent(d);
+                    }).bind(this)
+                    );
             this.refreshPaths();
         };
+        Drawer.prototype.initInfosContent = function() {
+            this.infos.style('display', 'none');
+            this.infos.append('svg:rect')
+                .attr('id', 'shadow')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('width', this.viewbox.width)
+                .attr('height', this.viewbox.height)
+                .style('fill', d3.rgb(0, 0, 0))
+                .style('opacity', 0.5);
+            this.infos.append('svg:rect')
+                .attr('id', 'infosBox')
+                .attr('x', -10)
+                .attr('y', -10)
+                .attr('width', 0)
+                .attr('height', 0)
+                .style('fill', d3.rgb(255, 255, 255))
+                .style('stroke', this.STROKE_COLOR)
+                .style('stroke-width', 2);
+            
+            this.infos.append('svg:text')
+                .attr('clip-path', 'url(#infos_clip)')
+                .attr('font-family', 'Arial')
+                .attr('text-anchor', 'left')
+                .text('');
+        };
+        Drawer.prototype.setInfosContent = function(d) {
+            var width, height;
+            if (d.path.getInfosSize().width > this.maxInfosSize.width) {
+                width = this.maxInfosSize.width;
+            } else {
+                width = d.path.getInfosSize().width;
+            }
 
+            if (d.path.getInfosSize().height > this.maxInfosSize.height) {
+                height = this.maxInfosSize.height;
+            } else {
+                height = d.path.getInfosSize().height;
+            }
+
+            this.svg.select('#infos_clip')
+                .select('rect')
+                .attr('width', width)
+                .attr('height', height);
+            this.infos.select('#infosBox')
+                .attr('width', width + 20)
+                .attr('height', height + 20);
+
+            this.indentLevel = 0;
+            this.parseInfos(d.path.getPath());
+
+            this.infos.select('#shadow')
+                .attr('x', -(this.viewbox.width * 0.5 - width * 0.5))
+                .attr('y', -(this.viewbox.height * 0.5 - height * 0.5))
+
+            this.infos
+                .attr(
+                    'transform',
+                    'translate(' + (this.viewbox.width * 0.5 - width * 0.5) + ',' + (this.viewbox.height * 0.5 - height * 0.5) + ')'
+                    )
+                .style('display', 'block');
+        };
+
+        Drawer.prototype.parseInfos = function(obj) {
+            var actualIndentLevel = this.indentLevel;
+            for (var key in obj) {
+                if (typeof (obj[key]) === 'object') {
+                    this.infos.select('text')
+                        .append('svg:tspan')
+                        .attr('x', 0)
+                        .attr('dy', '1em')
+                        .attr('dx', (actualIndentLevel*2)+'em')
+                        .style('font-size', '17px')
+                        .attr('fill', d3.rgb(196,53,63))
+                        .style('font-weight', 'bold')
+                        .text('"' + key + '" ');
+                    
+                    this.infos.select('text')
+                        .append('svg:tspan')
+                        .attr('dy', '0em')
+                        .attr('dx', '0em')
+                        .style('font-size', '17px')
+                        .text(': {');
+
+                    this.indentLevel++;
+                    this.parseInfos(obj[key]);
+
+                    this.infos.select('text')
+                        .append('svg:tspan')
+                        .attr('x', 0)
+                        .attr('dy', '1em')
+                        .attr('dx', (actualIndentLevel*2)+'em')
+                        .style('font-size', '17px')
+                        .text('},');
+                } else {
+                    this.infos.select('text')
+                        .append('svg:tspan')
+                        .attr('x', 0)
+                        .attr('dy', '1em')
+                        .attr('dx', (actualIndentLevel*2)+'em')
+                        .style('font-size', '17px')
+                        .attr('fill', d3.rgb(196,53,63))
+                        .style('font-weight', 'bold')
+                        .text('"' + key + '" ');
+
+                    this.infos.select('text')
+                        .append('svg:tspan')
+                        .attr('dy', '0em')
+                        .attr('dx', '0em')
+                        .style('font-size', '17px')
+                        .text(': "' + obj[key] + '", ');
+                }
+            }
+        };
         Drawer.prototype.setPath = function(d) {
             if (d.source.y > d.target.y) {
                 if (d.target.x >= d.source.x) {
                     d.sx = d.source.x + d.source.step.getSize().width / 2;
                     d.sy = d.source.y;
-
                     d.tx = d.target.x + d.target.step.getSize().width / 2;
                     d.ty = d.target.y;
-
                     d.mx = d3.max([d.sx + this.MARGIN * 0.5, d.tx + this.MARGIN * 0.5]);
                     d.my = d.sy - Math.abs(d.ty - d.sy) * 0.5;
-
                     return 'M' + d.sx + ',' + d.sy + 'L' + d.mx + ',' + d.sy + 'L' + d.mx + ',' + d.ty + 'L' + (d.tx + this.ARROW_SIZE) + ',' + d.ty;
                 } else {
                     d.sx = d.source.x - d.source.step.getSize().width / 2;
                     d.sy = d.source.y;
-
                     d.tx = d.target.x - d.target.step.getSize().width / 2;
                     d.ty = d.target.y;
-
                     d.mx = d3.min([d.sx - this.MARGIN * 0.5, d.tx - this.MARGIN * 0.5]);
                     d.my = d.sy - Math.abs(d.ty - d.sy) * 0.5;
-
                     return 'M' + d.sx + ',' + d.sy + 'L' + d.mx + ',' + d.sy + 'L' + d.mx + ',' + d.ty + 'L' + (d.tx - this.ARROW_SIZE) + ',' + d.ty;
                 }
             } else {
@@ -207,17 +332,14 @@ define(
                 d.sy = d.source.y + d.source.step.getSize().height / 2;
                 d.tx = d.target.x;
                 d.ty = d.target.y - d.target.step.getSize().height / 2;
-
                 d.mx = d.sx + (d.tx - d.sx) * 0.5;
                 d.my = d.sy + Math.abs(d.ty - d.sy) * 0.5;
-
                 return 'M' + d.sx + ',' + d.sy +
                     'L' + d.sx + ',' + d.my +
                     'L' + d.tx + ',' + d.my +
                     'L' + d.tx + ',' + (d.ty - this.ARROW_SIZE);
             }
         };
-
         Drawer.prototype.setArrow = function(d) {
             if (d.source.y > d.target.y) {
                 if (d.target.x >= d.source.x) {
@@ -238,7 +360,6 @@ define(
                     'L' + d.tx + ',' + d.ty;
             }
         };
-
         Drawer.prototype.drawSteps = function() {
             this.steps = this.steps
                 .selectAll('g')
@@ -251,7 +372,6 @@ define(
                         return 'group_' + d.step.getKey();
                     }
                 );
-
             this.steps.append('svg:rect')
                 .attr('x', function(d) {
                     return -(d.step.getSize().width / 2);
@@ -271,11 +391,9 @@ define(
                 .style('fill', d3.rgb(255, 255, 255))
                 .style('stroke', this.STROKE_COLOR)
                 .call(this.dragListener);
-
             var txt = this.steps.append('svg:text')
                 .attr('font-family', 'Arial')
                 .attr('text-anchor', 'middle');
-
             txt.append('svg:tspan')
                 .attr('x', 0)
                 .attr('dy', '-0.5em')
@@ -284,7 +402,6 @@ define(
                 .text(function(d) {
                     return d.step.getKey();
                 });
-
             txt.append('svg:tspan')
                 .attr('x', 0)
                 .attr('dy', '2em')
@@ -292,10 +409,8 @@ define(
                 .text(function(d) {
                     return '<' + d.step.getType() + '>';
                 });
-
             this.translateSteps();
         };
-
         Drawer.prototype.translateSteps = function() {
             this.steps.attr(
                 'transform',
@@ -304,7 +419,6 @@ define(
                 }
             );
         };
-
         Drawer.prototype.refreshPaths = function() {
             this.paths.select('.link')
                 .attr(
@@ -313,7 +427,6 @@ define(
                         return this.setPath(d);
                     }).bind(this)
                     );
-
             this.paths.select('.arrow')
                 .attr(
                     'd',
@@ -321,13 +434,11 @@ define(
                         return this.setArrow(d);
                     }).bind(this)
                     );
-
             this.paths.select('.box')
                 .attr('transform', function(d) {
                     return 'translate(' + d.mx + ',' + d.my + ')';
                 });
         };
-
         return Drawer;
     }
 );
