@@ -2,18 +2,24 @@
 
 define(
     [
-        'jquery-private'
+        'jquery-private',
+        'infos'
     ],
-    function($) {
+    function($, Infos) {
         function Step(key, step) {
             this.PADDING = 20;
             this.FONT_FAMILY = 'Arial';
             
             this.key = key;
             this.step = step;
+            this.infos = new Infos(this.step);
             
             this.initSize();
         }
+        
+        Step.prototype.getInfosDOM = function() {
+            return this.infos.getDOM();
+        };
         
         Step.prototype.initSize = function() {
             var struct = $('<div></div>');

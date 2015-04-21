@@ -11,6 +11,7 @@ html, body
     margin : auto;
     border : 1px solid black;
     display: flex;
+    position : relative;
 }
 
 #svgBox {
