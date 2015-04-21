@@ -45,6 +45,7 @@ require(
         $(document).ready(function()
         {
             var allowUpdate = true;
+            var hasWaitingOrder = false;
 
             /************************EDITOR CONFIGURATION*************************/
             //Editor common param
@@ -96,7 +97,14 @@ require(
 
                     setTimeout(function() {
                         allowUpdate = true;
+                        
+                        if (hasWaitingOrder) {
+                            hasWaitingOrder = false;
+                            preview();
+                        }
                     }, 500);
+                } else {
+                    hasWaitingOrder = true;
                 }
             }
 
