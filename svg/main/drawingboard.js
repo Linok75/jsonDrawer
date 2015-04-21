@@ -42,13 +42,19 @@ require(
     ],
     function($, json, Drawer, CodeMirror)
     {
+        /*
+         * When document is ready, add json editor and an SVG pan.
+         */
         $(document).ready(function()
         {
+            /*
+             * Manage the lock for timeout of preview
+             */
             var allowUpdate = true;
             var hasWaitingOrder = false;
 
             /************************EDITOR CONFIGURATION*************************/
-            //Editor common param
+            //Editor parameters
             var theme = "base16-light";
             var indentUnit = 4;
             var indentWithTabs = true;
@@ -78,6 +84,9 @@ require(
                 }
             });
 
+            /*
+             * Set data in the drawer to draw the preview of JSON in the SVG pan
+             */
             function preview()
             {
                 if (allowUpdate) {
@@ -108,20 +117,29 @@ require(
                 }
             }
 
+            /*
+             * TODO a full page editor (comments to have a fixe container
+             */
             var resize = function() {
                 $("#container").width($(window).width());
                 $("#container").height($(window).height());
             };
-
             resize();
+            $(window).resize(resize);
+            
+            /*
+             * Create a new SVG drawer
+             */
             var drawer = new Drawer();
 
-            preview();
+            /*
+             * Try to draw the JSON for each change
+             */
             jsonEditor.on("change", preview);
 
-
-            $(window).resize(resize);
-
+            /*
+             * X axis resizer for the two pan (editor and svg pans)
+             */
             $('#resizer').draggable({
                 stop: function(t, e) {
                     jsonEditor.refresh();
