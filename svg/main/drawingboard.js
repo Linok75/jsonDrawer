@@ -107,7 +107,6 @@ require(
 
             resize();
             var drawer = new Drawer();
-            jsonEditor.doc.setValue(JSON.stringify(json));
 
             preview();
             jsonEditor.on("change", preview);
