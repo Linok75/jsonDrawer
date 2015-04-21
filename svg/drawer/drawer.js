@@ -25,15 +25,10 @@ define(
         function Drawer()
         {
             this.DEFAULT_STEP_DISTANCE = 50;
-            this.DEFAULT_SIZE = 1300;
+            this.DEFAULT_SIZE = 600;
             this.STROKE_COLOR = d3.rgb(4, 97, 201);
             this.ARROW_SIZE = 10;
             this.MARGIN = 100;
-
-            this.maxInfosSize = {
-                'width': this.DEFAULT_SIZE * 0.75,
-                'height': this.DEFAULT_SIZE * 0.75
-            };
 
             this.viewbox = {
                 'x': 0,
@@ -136,6 +131,8 @@ define(
                 });
             }
 
+            this.viewbox.height = this.nextPosition.y;
+            this.svg.attr('viewBox', 0 + ' ' + 0 + ' ' + this.DEFAULT_SIZE + ' ' + this.viewbox.height),            
             this.draw();
         };
         Drawer.prototype.draw = function() {
