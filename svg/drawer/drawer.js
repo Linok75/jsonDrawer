@@ -22,6 +22,9 @@ define(
     ],
     function($, Step, Path, Modal)
     {
+        /*
+         * Declare the Drawer object
+         */
         function Drawer()
         {
             this.DEFAULT_STEP_DISTANCE = 50;
@@ -30,6 +33,9 @@ define(
             this.ARROW_SIZE = 10;
             this.MARGIN = 100;
 
+            /*
+             * ATTRIBUTE a variable for viewBox svg attribute
+             */
             this.viewbox = {
                 'x': 0,
                 'y': 0,
@@ -37,11 +43,17 @@ define(
                 'height': this.DEFAULT_SIZE
             };
 
+            /*
+             * ATTRIBUTE Next position for each step
+             */
             this.nextPosition = {
                 'x': this.viewbox.width / 2,
                 'y': 25
             };
 
+            /*
+             * APPEND an SVG TAG in the DOM width his attributes
+             */
             this.svg = d3.select('#svgBox')
                 .append('svg:svg')
                 .attr('id', 'drawingboard')
@@ -52,8 +64,14 @@ define(
                 .attr('xmlns', 'http://www.w3.org/2000/svg')
                 .style('background-color', d3.rgb(183, 196, 189));
 
+            /*
+             * INSTANCIATE a Modal object
+             */
             this.modal = new Modal();
 
+            /*
+             * SET the drag listener for the steps
+             */
             this.dragListener = d3.behavior.drag()
                 .on("dragstart", function() {
                     d3.event.sourceEvent.stopPropagation();
@@ -63,6 +81,9 @@ define(
                 }).bind(this));
         }
 
+        /*
+         * FUNCTION The drag function called by the drag listener declared in constructor
+         */
         Drawer.prototype.drag = function(d) {
             var point = d3.mouse(this.svg[0][0]);
             d.x = point[0];
@@ -70,6 +91,11 @@ define(
             this.translateSteps();
             this.refreshPaths();
         };
+        
+        /*
+         * RETURN the step linked to this key
+         * IF found no step return an endStep
+         */
         Drawer.prototype.getStep = function(key, output) {
             for (var i = 0; i < this.data.steps.length; i++) {
                 if (this.data.steps[i].step.getKey() === key) {
@@ -101,13 +127,25 @@ define(
 
             return endStep;
         };
+        
+        /*
+         * SET the data object with the JSON object
+         */
         Drawer.prototype.setData = function(data) {
+            /*
+             * RESET graphic
+             */
+            this.nextPosition.y = 25;
+            this.svg.selectAll('g').remove();
             this.data = {
                 'steps': [],
                 'endSteps': [],
                 'paths': []
             };
 
+            /*
+             * SET the steps array values
+             */
             for (var step in data.steps) {
                 var newStep = new Step(step, data.steps[step]);
                 this.nextPosition.y += newStep.getSize().height;
@@ -120,9 +158,16 @@ define(
                     'inputLock': 0,
                     'step': newStep
                 });
+                
+                /*
+                 * UPDATE the next position
+                 */
                 this.nextPosition.y += newStep.getSize().height / 2 + this.MARGIN;
             }
 
+            /*
+             * SET the paths array values
+             */
             for (var path in data.paths) {
                 this.data.paths.push({
                     'source': this.getStep(data.paths[path].options.source, true),
@@ -131,19 +176,30 @@ define(
                 });
             }
 
+            /*
+             * UPDATE viewbox size
+             */
             this.viewbox.height = this.nextPosition.y;
             this.svg.attr('viewBox', 0 + ' ' + 0 + ' ' + this.DEFAULT_SIZE + ' ' + this.viewbox.height),            
+            
+            /*
+             * START call graphics functions
+             */    
             this.draw();
         };
+        
+        /*
+         * FUNCTION draw call each graphics functions
+         */
         Drawer.prototype.draw = function() {
-            this.nextPosition.y = 25;
-            this.svg.selectAll('g').remove();
-
             this.drawPaths();
             this.drawEndSteps();
             this.drawSteps();
         };
 
+        /*
+         * APPEND end step to SVG
+         */
         Drawer.prototype.drawEndSteps = function() {
             this.endSteps = this.svg
                 .append('svg:g')
@@ -170,6 +226,9 @@ define(
                 .call(this.dragListener);
         };
 
+        /*
+         * APPEND paths to SVG
+         */
         Drawer.prototype.drawPaths = function() {
             this.paths = this.svg
                 .append('svg:g')
@@ -243,10 +302,16 @@ define(
             this.refreshPaths();
         };
 
+        /*
+         * SET the modal content width path infos
+         */
         Drawer.prototype.displayPathInfos = function(d) {
             this.modal.append(d.path.getInfosDOM());
         };
 
+        /*
+         * SET the path point position
+         */
         Drawer.prototype.setPath = function(d) {
             d.source.outputLock++;
             d.target.inputLock++;
@@ -277,6 +342,9 @@ define(
                 'L' + d.tx + ',' + d.ty;
         };
 
+        /*
+         * SET the arrow position (juste the triangl)
+         */
         Drawer.prototype.setArrow = function(d) {
             d.source.outputLock = 0;
             d.target.inputLock = 0;
@@ -287,6 +355,9 @@ define(
                 'L' + d.tx + ',' + (d.ty + this.ARROW_SIZE);
         };
 
+        /*
+         * APPEND each step to SVG
+         */
         Drawer.prototype.drawSteps = function() {
             this.steps = this.svg
                 .append('svg:g')
@@ -383,6 +454,9 @@ define(
             this.translateSteps();
         };
 
+        /*
+         * SET modal content with step infos
+         */
         Drawer.prototype.displayStepInfos = function(d) {
             this.modal.append(d.step.getInfosDOM());
         };
