@@ -25,7 +25,7 @@ define(
         function Drawer()
         {
             this.DEFAULT_STEP_DISTANCE = 50;
-            this.DEFAULT_SIZE = 800;
+            this.DEFAULT_SIZE = 1300;
             this.STROKE_COLOR = d3.rgb(4, 97, 201);
             this.ARROW_SIZE = 10;
             this.MARGIN = 100;
@@ -59,8 +59,6 @@ define(
 
             this.modal = new Modal();
 
-            this.data = {};
-
             this.dragListener = d3.behavior.drag()
                 .on("dragstart", function() {
                     d3.event.sourceEvent.stopPropagation();
@@ -90,16 +88,35 @@ define(
                 }
             }
 
-            throw new Error('You try to link a step to a non created step !');
+            var endStep = {
+                'x': this.nextPosition.x,
+                'y': this.nextPosition.y,
+                'output': 0,
+                'input': 1,
+                'ouputLock': 0,
+                'inputLock': 0,
+                'step': new Step("END", {})
+            };
+
+            endStep.step.setSize(25, 25);
+
+            this.nextPosition.y += endStep.step.getSize().height / 2 + this.MARGIN;
+
+            this.data.endSteps.push(endStep);
+
+            return endStep;
         };
         Drawer.prototype.setData = function(data) {
-            var steps = [];
-            var paths = [];
+            this.data = {
+                'steps': [],
+                'endSteps': [],
+                'paths': []
+            };
 
             for (var step in data.steps) {
                 var newStep = new Step(step, data.steps[step]);
                 this.nextPosition.y += newStep.getSize().height;
-                steps.push({
+                this.data.steps.push({
                     'x': this.nextPosition.x,
                     'y': this.nextPosition.y,
                     'output': 0,
@@ -111,16 +128,13 @@ define(
                 this.nextPosition.y += newStep.getSize().height / 2 + this.MARGIN;
             }
 
-            this.data.steps = steps;
             for (var path in data.paths) {
-                paths.push({
+                this.data.paths.push({
                     'source': this.getStep(data.paths[path].options.source, true),
                     'target': this.getStep(data.paths[path].options.destination, false),
                     'path': new Path(data.paths[path])
                 });
             }
-
-            this.data.paths = paths;
 
             this.draw();
         };
@@ -129,8 +143,36 @@ define(
             this.svg.selectAll('g').remove();
 
             this.drawPaths();
+            this.drawEndSteps();
             this.drawSteps();
         };
+
+        Drawer.prototype.drawEndSteps = function() {
+            this.endSteps = this.svg
+                .append('svg:g')
+                .attr('id', 'group_end_steps');
+
+            this.endSteps = this.endSteps
+                .selectAll('cicle')
+                .data(this.data.endSteps)
+                .enter()
+                .append('svg:circle')
+                .attr('class', 'end_steps')
+                .attr('cx', function(d) {
+                    return d.x;
+                })
+                .attr('cy', function(d) {
+                    return d.y;
+                })
+                .attr('r', function(d) {
+                    return d.step.getSize().height * 0.5;
+                })
+                .style('stroke', this.STROKE_COLOR)
+                .style('stroke-width', 5)
+                .style('fill', d3.rgb(11, 3, 158))
+                .call(this.dragListener);
+        };
+
         Drawer.prototype.drawPaths = function() {
             this.paths = this.svg
                 .append('svg:g')
@@ -144,7 +186,7 @@ define(
                 .attr(
                     'id',
                     function(d) {
-                        return 'group_' + d.path.getKey().replace(' ', '_') + '_' + d.source.step.getKey() + '_' + d.target.step.getKey();
+                        return 'group_' + d.path.getKey().replace(/ /g, '_') + '_' + d.source.step.getKey() + '_' + d.target.step.getKey();
                     }
                 );
 
@@ -172,7 +214,7 @@ define(
                 .on(
                     'mouseover',
                     (function(d) {
-                        this.svg.select('#group_' + d.path.getKey().replace(' ', '_') + '_' + d.source.step.getKey() + '_' + d.target.step.getKey())
+                        this.svg.select('#group_' + d.path.getKey().replace(/ /g, '_') + '_' + d.source.step.getKey() + '_' + d.target.step.getKey())
                             .select('image')
                             .style('opacity', 1);
                     }).bind(this)
@@ -180,7 +222,7 @@ define(
                 .on(
                     'mouseout',
                     (function(d) {
-                        this.svg.select('#group_' + d.path.getKey().replace(' ', '_') + '_' + d.source.step.getKey() + '_' + d.target.step.getKey())
+                        this.svg.select('#group_' + d.path.getKey().replace(/ /g, '_') + '_' + d.source.step.getKey() + '_' + d.target.step.getKey())
                             .select('image')
                             .style('opacity', 0);
                     }).bind(this)
@@ -355,6 +397,14 @@ define(
                     return 'translate(' + d.x + ',' + d.y + ')';
                 }
             );
+        
+            this.endSteps
+                .attr('cx', function(d) {
+                    return d.x;
+                })
+                .attr('cy', function(d) {
+                    return d.y;
+                });
         };
 
         Drawer.prototype.refreshPaths = function() {

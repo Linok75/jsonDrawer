@@ -67,5 +67,12 @@ define(
             return this.size;
         };
         
+        Step.prototype.setSize = function(width, height) {
+            this.size = {
+                'width': width,
+                'height': height
+            };
+        };
+        
         return Step;
     });
