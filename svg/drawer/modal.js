@@ -5,6 +5,9 @@ define(
         'jquery-private'
     ],
     function($) {
+        /*
+         * MODAL used to display any DOM object in a modal
+         */
         function Modal() {
             this.container = $('<div></div>');
             this.modal = $('<div></div>');
@@ -16,6 +19,10 @@ define(
             this.initCloseButton();
         }
 
+        /*
+         * APPEND the close button in the modal
+         * Don't supress the modal juste hide him
+         */
         Modal.prototype.initCloseButton = function() {
             var buttonSize = '13px';
 
@@ -37,6 +44,9 @@ define(
             this.modal.append(this.closeButton);
         };
 
+        /*
+         * CREATE the modal container
+         */
         Modal.prototype.initContainer = function() {
             this.container.attr('id', 'modal_drawer_container');
 
@@ -53,6 +63,9 @@ define(
             this.container.appendTo($('#container'));
         };
 
+        /*
+         * CREATE the modal without content
+         */
         Modal.prototype.initModal = function() {
             this.modal.attr('id', 'modal_drawer');
 
@@ -69,6 +82,9 @@ define(
             this.modal.css('white-space', 'nowrap');
         };
 
+        /*
+         * APPEND a DOM element to modal
+         */
         Modal.prototype.append = function(element) {
             this.oldData = element;
             this.modal.append(this.oldData);

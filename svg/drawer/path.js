@@ -6,6 +6,9 @@ define(
         'infos'
     ],
     function($, Infos) {
+        /*
+         * PATH used to handler the path JSON object
+         */
         function Path(path) {
             this.PADDING = 20;
             this.FONT_FAMILY = 'Arial';
@@ -17,6 +20,9 @@ define(
             this.initSize();
         }
 
+        /*
+         * INIT the size of the key text
+         */
         Path.prototype.initSize = function() {
             var struct = $('<div></div>');
             var pKey = $('<p></p>').text(this.key);
@@ -41,22 +47,37 @@ define(
             struct.remove();
         };
 
+        /*
+         * GET the key of the json object (label)
+         */
         Path.prototype.getKey = function() {
             return this.key;
         };
 
+        /*
+         * GET the padding used to set the size
+         */
         Path.prototype.getPadding = function() {
             return this.PADDING;
         };
 
+        /*
+         * GET size of key text displaying
+         */
         Path.prototype.getSize = function() {
             return this.size;
         };
 
+        /*
+         * GET the DOM used to display path object
+         */
         Path.prototype.getInfosDOM = function() {
             return this.infos.getDOM();
         };
 
+        /*
+         * GET the path JSON object
+         */
         Path.prototype.getPath = function() {
             return this.path;
         };

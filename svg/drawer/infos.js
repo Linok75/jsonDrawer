@@ -5,6 +5,9 @@ define(
         'jquery-private'
     ],
     function($, Infos) {
+        /*
+         * INFOS osed to return the DOM construction to display a JSON object
+         */
         function Infos(obj) {
             this.PADDING = 20;
             this.FONT_FAMILY = 'Arial';
@@ -18,10 +21,16 @@ define(
             this.initDOM();
         }
         
+        /*
+         * GET the DOM to display object
+         */
         Infos.prototype.getDOM = function() {
             return this.DOM;
         };
         
+        /*
+         * PARSE object to create the DOM
+         */
         Infos.prototype.parseObj = function(obj, struct) {
             for (var key in obj) {
                 if (typeof (obj[key]) === 'object') {
@@ -72,6 +81,9 @@ define(
             }
         };
 
+        /*
+         * CREATE the DOM
+         */
         Infos.prototype.initDOM = function() {
             this.DOM.css('margin', 0);
             this.DOM.css('padding', 0);
