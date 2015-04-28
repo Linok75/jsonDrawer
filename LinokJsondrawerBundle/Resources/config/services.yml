@@ -1,0 +1,8 @@
+parameters:
+
+
+services:
+    linok.twig.jsondawer_extension:
+        class: Linok\JsondrawerBundle\Twig\JsondrawerExtension
+        tags:
+            - { name: twig.extension }
