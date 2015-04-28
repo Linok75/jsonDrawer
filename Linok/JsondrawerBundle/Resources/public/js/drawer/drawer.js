@@ -3,15 +3,16 @@
 requirejs.config(
     {
         paths: {
-            'd3': 'lib/d3.min',
-            'step': 'drawer/step',
-            'path': 'drawer/path',
-            'infos': 'drawer/infos',
-            'endstep': 'drawer/endStep',
-            'modal': 'drawer/modal'
+            'd3': '/bundles/linokjsondrawer/js/lib/d3.min',
+            'step': '/bundles/linokjsondrawer/js/drawer/step',
+            'path': '/bundles/linokjsondrawer/js/drawer/path',
+            'infos': '/bundles/linokjsondrawer/js/drawer/infos',
+            'endstep': '/bundles/linokjsondrawer/js/drawer/endStep',
+            'modal': '/bundles/linokjsondrawer/js/drawer/modal'
         }
     }
 );
+
 define(
     [
         'jquery-private',
@@ -290,7 +291,7 @@ define(
                 .attr('y', -12.5)
                 .attr('width', 25)
                 .attr('height', 25)
-                .attr('xlink:href', 'images/info_icon.svg')
+                .attr('xlink:href', '/bundles/linokjsondrawer/images/info_icon.svg')
                 .style('opacity', 0)
                 .on(
                     'click',
@@ -442,7 +443,7 @@ define(
                 })
                 .attr('width', 25)
                 .attr('height', 25)
-                .attr('xlink:href', 'images/info_icon.svg')
+                .attr('xlink:href', '/bundles/linokjsondrawer/images/info_icon.svg')
                 .style('opacity', 0)
                 .on(
                     'click',

@@ -26,7 +26,7 @@ define(
         Modal.prototype.initCloseButton = function() {
             var buttonSize = '13px';
 
-            this.closeButton.attr('src', 'images/close_icon.svg');
+            this.closeButton.attr('src', '/bundles/linokjsondrawer/images/close_icon.svg');
 
             this.closeButton.css('position', 'fixed');
             this.closeButton.css('right', '20%');
@@ -60,7 +60,7 @@ define(
             this.container.css('display', 'none');
 
             this.container.append(this.modal);
-            this.container.appendTo($('#container'));
+            this.container.appendTo($('#svgBox'));
         };
 
         /*
